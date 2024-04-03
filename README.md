@@ -1,12 +1,12 @@
 # AutoEvents
 
-Private plugin for Noah's Nation SCP:SL server to accomodate the loading and auto-running of a variety of different fun gamemodes.
-
-``events <name>`` - runs the event specified
-``eventskip`` - stops events from being ran this round
-``relativepos`` - helper command: returns the relative position of the player and the room they are in.
-``.role`` - allows the event winner to choose their role next round
-``.vote`` - allows players to vote for the event when an event vote starts
+Private plugin for Noah's Nation SCP:SL server to accomodate the loading and auto-running of a variety of different fun gamemodes.  
+  
+``events <name>`` - runs the event specified  
+``eventskip`` - stops events from being ran this round  
+``relativepos`` - helper command: returns the relative position of the player and the room they are in.  
+``.role`` - allows the event winner to choose their role next round  
+``.vote`` - allows players to vote for the event when an event vote starts  
 
 ## Current Events
 
