@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoEvents.Models;
 using AutoEvents.Extensions;
+using Exiled.API.Enums;
 
 namespace AutoEvents.Commands
 {
@@ -78,6 +79,22 @@ namespace AutoEvents.Commands
                 response = res;
                 return false;
             }
+
+            // experimental zone specifying code
+
+            /* ZoneType zone = ZoneType.Unspecified;
+
+            if (arguments.At(1) != null && (!Enum.TryParse(arguments.At(1), out zone) || !Enum.TryParse(arguments.At(1) + "Containment", out zone)))
+            {
+                response = "Could not parse second argument as a valid ZoneType. Use either Light, Heavy or Entrance";
+                return false;
+            }
+
+            if (zone != ZoneType.LightContainment || zone != ZoneType.HeavyContainment || zone != ZoneType.Entrance)
+            {
+                response = "Invalid zone type.";
+                return false;
+            } */
 
             if (player.HasLocalCooldown() && !HasBypass)
             {

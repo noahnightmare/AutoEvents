@@ -9,14 +9,14 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace AutoEvents.Events.DogHideAndSeek
+namespace AutoEvents.Events.PeanutSurvival
 {
     public class Config : EventConfig
     {
-        public RoleTypeId SeekerRole { get; set; } = RoleTypeId.Scp939;
-        public RoomType Room { get; set; } = RoomType.Lcz173;
-        public Vector3 RelativePosition { get; set; } = new Vector3(19.64f, 12.43f, 7.98f);
-        public int TimeToLetHidersHide { get; set; } = 30;
+        public RoleTypeId peanutRole = RoleTypeId.Scp173;
+        public RoomType Room { get; set; } = RoomType.Hcz079;
+        public Vector3 PeanutRelativePosition { get; set; } = new Vector3(11.55f, -2.37f, 1.02f);
+        public Vector3 PlayerRelativePosition { get; set; } = new Vector3(-3.67f, -4.28f, -6.71f);
 
         public override List<RoleTypeId> rolesThatCantPickup { get; set; } = new List<RoleTypeId>()
         {

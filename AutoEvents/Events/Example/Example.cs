@@ -31,7 +31,7 @@ namespace AutoEvents.Events.Example
         public override string CommandName { get; set; } = "e";
 
         private Player _winner { get; set; }
-        private Side _winnerSide { get; set; }
+        private Side _winnerSide { get; set; } 
 
         // event handlers, unique per plugin
         // register game logic within EventHandler per event
@@ -62,6 +62,9 @@ namespace AutoEvents.Events.Example
         // define what happens at the start of the event
         protected override void OnStart()
         {
+            _winner = null;
+            _winnerSide = Side.None;
+
             Map.Broadcast(200, "Example");
             foreach (Player player in Player.List)
             {

@@ -9,13 +9,15 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace AutoEvents.Events.DogHideAndSeek
+namespace AutoEvents.Events.HideAndSeekLight
 {
     public class Config : EventConfig
     {
-        public RoleTypeId SeekerRole { get; set; } = RoleTypeId.Scp939;
-        public RoomType Room { get; set; } = RoomType.Lcz173;
-        public Vector3 RelativePosition { get; set; } = new Vector3(19.64f, 12.43f, 7.98f);
+        public Vector3 Scale { get; set; } = new Vector3(0.3f, 0.3f, 0.3f);
+        public RoleTypeId SeekerRole { get; set; } = RoleTypeId.Scp049;
+        public RoleTypeId deadPlayerRole { get; set; } = RoleTypeId.Scp0492;
+        public RoomType SeekerRoom { get; set; } = RoomType.Lcz173;
+        public Vector3 SeekerRelativePosition { get; set; } = new Vector3(19.64f, 12.43f, 7.98f);
         public int TimeToLetHidersHide { get; set; } = 30;
 
         public override List<RoleTypeId> rolesThatCantPickup { get; set; } = new List<RoleTypeId>()

@@ -19,18 +19,19 @@ using Exiled.API.Features.Pickups.Projectiles;
 using Exiled.API.Extensions;
 using InventorySystem.Items.Pickups;
 using Interactables.Interobjects.DoorUtils;
-using Exiled.API.Features.Items;
-using JetBrains.Annotations;
+using PlayerRoles.PlayableScps.Scp079.Overcons;
+using CustomPlayerEffects;
+using Exiled.Events.EventArgs.Player;
 
-namespace AutoEvents.Events.SmallRound
+namespace AutoEvents.Events.TeamDeathmatch
 {
     // implement the IHidden interface if you don't want the event to be registered/seen
-    public class SmallRound : Event
+    public class TeamDeathmatch : Event
     {
         // Set the info for the event.
-        public override string Name { get; set; } = "SmallRound";
-        public override EventType eventType { get; set; } = EventType.NormalRound;
-        public override string CommandName { get; set; } = "sm";
+        public override string Name { get; set; } = "TeamDeathmatch";
+        public override EventType eventType { get; set; } = EventType.Event;
+        public override string CommandName { get; set; } = "tdm";
 
         private Player _winner { get; set; }
         private Side _winnerSide { get; set; }
@@ -47,11 +48,19 @@ namespace AutoEvents.Events.SmallRound
         protected override void RegisterEvents()
         {
             _handler = new EventHandler(_config);
+            Handlers.Server.RespawningTeam += _handler.OnRespawningTeam;
+            Handlers.Warhead.Starting += _handler.OnWarheadStarting;
+            Handlers.Map.AnnouncingScpTermination += _handler.OnAnnouncingScpTermination;
+            Handlers.Player.Shooting += _handler.OnPlayerShooting;
         }
 
         // events unregistered when the event finishes
         protected override void UnregisterEvents()
         {
+            Handlers.Server.RespawningTeam -= _handler.OnRespawningTeam;
+            Handlers.Warhead.Starting -= _handler.OnWarheadStarting;
+            Handlers.Map.AnnouncingScpTermination -= _handler.OnAnnouncingScpTermination;
+            Handlers.Player.Shooting -= _handler.OnPlayerShooting;
             _handler = null;
         }
 
@@ -61,17 +70,56 @@ namespace AutoEvents.Events.SmallRound
             _winner = null;
             _winnerSide = Side.None;
 
-            foreach (Player player in Player.List)
+            foreach (Lift lift in Lift.List)
             {
-                player.Scale = _config.Scale;
+                lift.ChangeLock(DoorLockReason.AdminCommand);
             }
+
+            List<Player> availablePlayersToAssign = new List<Player>(Player.List);
+
+            for (int i = 0; i < Player.List.Count / 2; i++)
+            {
+                Player p = availablePlayersToAssign.GetRandomValue();
+                p.Role.Set(_config.FirstRole);
+                p.Position = Room.Get(_config.FirstRoom).WorldPosition(_config.FirstRelativePosition);
+                availablePlayersToAssign.Remove(p);
+            }
+
+            foreach (Player player in availablePlayersToAssign)
+            {
+                player.Role.Set(_config.SecondRole);
+                player.Position = Room.Get(_config.SecondRoom).WorldPosition(_config.SecondRelativePosition);
+            }
+
+            foreach(Player player in Player.List)
+            {
+                player.EnableEffect<Ensnared>(1, 6);
+            }
+
+            Cassie.MessageTranslated("5 . 4 . 3 . 2 . 1 . ", "5.. 4.. 3.. 2.. 1..", default, false, default);
+
+            Timing.CallDelayed(10f , () => { Door.Get(DoorType.SurfaceGate).IsOpen = true; });
         }
 
         // Use this method to return a bool to determine if the event should finish
         // If it returns false, the event will continue running through ProcessEventLogic()
         protected override bool IsEventDone()
         {
-            if (Round.IsEnded) return true;
+            if (_winnerSide != Side.None)
+            {
+                return true;
+            }
+
+            if (Player.List.Where(x => x.Role == _config.FirstRole).IsEmpty() && _winnerSide == Side.None)
+            {
+                _winnerSide = _config.FirstRole.GetSide();
+                return true;
+            }
+            else if (Player.List.Where(x => x.Role == _config.SecondRole).IsEmpty() && _winnerSide == Side.None)
+            {
+                _winnerSide = _config.SecondRole.GetSide();
+                return true;
+            }
 
             return false;
         }
@@ -83,16 +131,14 @@ namespace AutoEvents.Events.SmallRound
         // Use coroutineDelay to change the delay between each run
         protected override void ProcessEventLogic()
         {
-            foreach (Player player in Player.List.Where(x => x.Scale != _config.Scale))
-            {
-                player.Scale = _config.Scale;
-            }
+
         }
 
         // This executes only if the event finishes. If the event is stopped. OnStop will be called instead.
         protected override void OnEnd()
         {
-
+            // ALWAYS call this on round end! _winner and _winnerSide can be null/Side.None
+            WinnerController.HandleEventWinner(_winner, _winnerSide, _config.EndMessage);
         }
 
         // Can be used to broadcast that the event is stopping. Can also be used to stop extra coroutines.

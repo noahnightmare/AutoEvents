@@ -66,6 +66,9 @@ namespace AutoEvents.Events.DogHideAndSeek
         // define what happens at the start of the event
         protected override void OnStart()
         {
+            _winner = null;
+            _winnerSide = Side.None;
+
             DecontaminationController.Singleton.DecontaminationOverride = DecontaminationController.DecontaminationStatus.Disabled;
 
             foreach (Player player in Player.List)

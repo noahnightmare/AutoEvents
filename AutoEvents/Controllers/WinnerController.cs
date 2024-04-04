@@ -15,21 +15,35 @@ namespace AutoEvents.Controllers
 {
     public static class WinnerController
     {
-        public static Player winner { get; set; }
-        public static Side winnerSide { get; set; }
-        public static RoleTypeId winnerDesiredRole { get; set; }
-        public static CoroutineHandle internalRoleChoiceCoroutine;
+        public static Player winner { get; set; } = null;
+        public static string winnerUserId { get; set; } = null;
+        public static Side winnerSide { get; set; } = Side.None;
+        public static RoleTypeId winnerDesiredRole { get; set; } = RoleTypeId.None;
+
+        private static CoroutineHandle internalRoleChoiceCoroutine;
 
         public static void HandleEventWinner(Player p, Side s, string broadcastMessage)
         {
             // Assign null if there is no winner player/side
             winner = p;
             winnerSide = s;
+            winnerUserId = p.UserId;
 
             Map.ClearBroadcasts();
-            Map.Broadcast(30, broadcastMessage.Replace("{name}", winner.Nickname).Replace("{side}", Helpers.GetSideName(winnerSide)));
+            
+            if (winner != null || winnerSide != Side.None)
+            {
+                Map.Broadcast(30, broadcastMessage.Replace("{name}", winner.Nickname).Replace("{side}", Helpers.GetSideName(winnerSide)));
 
-            internalRoleChoiceCoroutine = Timing.RunCoroutine(RoleOnEnded(winner).CancelWith(winner.GameObject), "Role On Ended");
+                if (winner != null)
+                {
+                    internalRoleChoiceCoroutine = Timing.RunCoroutine(RoleOnEnded(winner).CancelWith(winner.GameObject), "Role On Ended");
+                }
+            }
+            else
+            {
+                Map.Broadcast(30, "<b>Everyone died!</b>\nNobody won the event this time.");
+            }
         }
 
         private static IEnumerator<float> RoleOnEnded(Player player)
@@ -45,6 +59,7 @@ namespace AutoEvents.Controllers
         {
             winner = null;
             winnerSide = Side.None;
+            winnerUserId = null;
             winnerDesiredRole = RoleTypeId.None;
             Kill();
         }

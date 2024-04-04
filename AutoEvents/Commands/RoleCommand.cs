@@ -51,7 +51,7 @@ namespace AutoEvents.Commands
             RoleTypeId role;
 
             // Checks all cases
-            if (!Enum.TryParse(arguments.At(0), true, out role) && !Enum.TryParse("Scp" + arguments.At(0), true, out role) && !Enum.TryParse("Scp-" + arguments.At(0), true, out role))
+            if (!Enum.TryParse("Scp" + arguments.At(0), true, out role) && !Enum.TryParse(arguments.At(0), true, out role))
             {
                 response = "Error parsing the RoleTypeId.\nAll Roles: Scp173, Scp096, Scp939, Scp106, Scp049, Scp079, Scp3114, ClassD, Scientist, FacilityGuard";
                 return false;

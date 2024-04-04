@@ -63,7 +63,7 @@ namespace AutoEvents
             {
                 return;
             }
-            
+
             // Resets winners 15 seconds into the game
             Timing.CallDelayed(15f, WinnerController.Reset);
 
@@ -77,8 +77,9 @@ namespace AutoEvents
 
                 foreach (Player player in Player.List)
                 {
-                    if (player == WinnerController.winner)
+                    if (player.UserId == WinnerController.winnerUserId)
                     {
+                        Log.Warn($"{player.Nickname} - winner found!");
                         winnerPreviousRole = player.Role;
                         if (player.Role != WinnerController.winnerDesiredRole)
                         {
@@ -88,12 +89,12 @@ namespace AutoEvents
                         else playerIsAlreadyWinnerRole = true;
                     }
 
-                    if (player.Role == WinnerController.winnerDesiredRole && player != WinnerController.winner)
+                    if (player.Role == WinnerController.winnerDesiredRole && player.UserId != WinnerController.winnerUserId)
                     {
                         PlayersOfWinnerRole.Add(player);
                     }
 
-                    if (RoleExtensions.GetTeam(player.Role) == Team.SCPs && player != WinnerController.winner)
+                    if (RoleExtensions.GetTeam(player.Role) == Team.SCPs && player.UserId != WinnerController.winnerUserId)
                     {
                         PlayersAsSCP.Add(player);
                     }

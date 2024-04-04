@@ -62,6 +62,9 @@ namespace AutoEvents.Events.BallSurvival
         // define what happens at the start of the event
         protected override void OnStart()
         {
+            _winner = null;
+            _winnerSide = Side.None;
+
             Map.Broadcast(200, "<b>Ball Survival\nSCP-018 will drop every <color=red>20 seconds</color> on a random target!</b>");
             foreach(Player player in Player.List)
             {

@@ -82,7 +82,7 @@ namespace AutoEvents.Controllers
 
         private IEnumerator<float> ShowEventName()
         {
-            while (true)
+            while (!Round.IsStarted)
             {
                 if (_killLoops)
                 {
