@@ -62,6 +62,7 @@
     <Compile Include="Commands\EventSkipCommand.cs" />
     <Compile Include="Commands\RelativePositionCommand.cs" />
     <Compile Include="Commands\RoleCommand.cs" />
+    <Compile Include="Commands\TpsCommand.cs" />
     <Compile Include="Commands\VoteCommand.cs" />
     <Compile Include="Configs\Config.cs" />
     <Compile Include="Controllers\CooldownController.cs" />
