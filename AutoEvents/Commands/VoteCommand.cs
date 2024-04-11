@@ -51,17 +51,36 @@ namespace AutoEvents.Commands
                 return false;
             }
 
-            string args = arguments.At(0);
+            // gets current voted event
+            int currentEventVotedFor;
+            Player currentVoter;
+            try
+            {
+                currentEventVotedFor = int.Parse(arguments.At(0));
+                currentVoter = Player.Get(sender);
+            }
+            catch
+            {
+                response = "Invalid input. Please choose either 1, 2, 3 or 4 depending on which event you want.";
+                return false;
+            }
+
+            // handles case where player votes for the same event twice
+            if (playerVoted.TryGetValue(currentVoter, out int previousEventVotedFor) && currentEventVotedFor == previousEventVotedFor)
+            {
+                response = "You already voted for this event!";
+                return false;
+            }
 
             // handles current voting
-            switch (args)
+            switch (currentEventVotedFor)
             {
-                case "1":
-                case "2":
-                case "3":
-                    EventVoteController.SetVoteEventVotes(int.Parse(args), _voteAmount);
+                case 1:
+                case 2:
+                case 3:
+                    EventVoteController.SetVoteEventVotes(currentEventVotedFor - 1, _voteAmount); // -1 to account for 0 indexing
                     break;
-                case "4":
+                case 4:
                     EventVoteController.SetCancelVotes(_voteAmount);
                     break;
                 default:
@@ -69,16 +88,12 @@ namespace AutoEvents.Commands
                     return false;
             }
 
-            // gets current voted event
-            int currentEventVotedFor = int.Parse(arguments.At(0));
-
             // handles vote switching
-            if (playerVoted.TryGetValue(Player.Get(sender), out int previousEventVotedFor))
+            if (playerVoted.TryGetValue(currentVoter, out previousEventVotedFor))
             {
                 if (previousEventVotedFor == 4 && currentEventVotedFor != previousEventVotedFor)
                 {
                     EventVoteController.SetCancelVotes(-_voteAmount);
-                    playerVoted[Player.Get(sender)] = currentEventVotedFor;
                 }
                 else if (currentEventVotedFor != previousEventVotedFor)
                 {
@@ -87,7 +102,7 @@ namespace AutoEvents.Commands
             }
 
             // overwrites dictionary with current voted event
-            playerVoted[Player.Get(sender)] = currentEventVotedFor;
+            playerVoted[currentVoter] = currentEventVotedFor;
 
             response = $"Voted for Option " + int.Parse(arguments.At(0));
             return true;

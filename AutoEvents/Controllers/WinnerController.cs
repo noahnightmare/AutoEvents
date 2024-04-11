@@ -16,7 +16,6 @@ namespace AutoEvents.Controllers
     public static class WinnerController
     {
         public static Player winner { get; set; } = null;
-        public static string winnerUserId { get; set; } = null;
         public static Side winnerSide { get; set; } = Side.None;
         public static RoleTypeId winnerDesiredRole { get; set; } = RoleTypeId.None;
 
@@ -27,19 +26,21 @@ namespace AutoEvents.Controllers
             // Assign null if there is no winner player/side
             winner = p;
             winnerSide = s;
-            winnerUserId = p.UserId;
 
             Map.ClearBroadcasts();
-            
-            if (winner != null || winnerSide != Side.None)
-            {
-                Map.Broadcast(30, broadcastMessage.Replace("{name}", winner.Nickname).Replace("{side}", Helpers.GetSideName(winnerSide)));
 
-                if (winner != null)
-                {
-                    internalRoleChoiceCoroutine = Timing.RunCoroutine(RoleOnEnded(winner).CancelWith(winner.GameObject), "Role On Ended");
-                }
+            // Winner player
+            if (winner != null)
+            {
+                Map.Broadcast(30, broadcastMessage.Replace("{name}", winner.Nickname));
+                internalRoleChoiceCoroutine = Timing.RunCoroutine(RoleOnEnded(winner).CancelWith(winner.GameObject), "Role On Ended");
             }
+            // Winner side
+            else if (winnerSide != Side.None)
+            {
+                Map.Broadcast(30, broadcastMessage.Replace("{side}", Helpers.GetSideName(winnerSide)));
+            }
+            // No winner
             else
             {
                 Map.Broadcast(30, "<b>Everyone died!</b>\nNobody won the event this time.");
@@ -59,7 +60,6 @@ namespace AutoEvents.Controllers
         {
             winner = null;
             winnerSide = Side.None;
-            winnerUserId = null;
             winnerDesiredRole = RoleTypeId.None;
             Kill();
         }

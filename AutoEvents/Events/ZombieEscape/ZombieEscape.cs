@@ -99,7 +99,7 @@ namespace AutoEvents.Events.ZombieEscape
             Door.Get(DoorType.Intercom).IsOpen = true;
             Door.Get(DoorType.Scp079First).IsOpen = true;
 
-            foreach (Player player in Player.List)
+            foreach (Player player in Player.List.Where(x => !x.IsOverwatchEnabled))
             {
                 player.Role.Set(_config.Role);
                 player.ClearInventory();
@@ -109,7 +109,7 @@ namespace AutoEvents.Events.ZombieEscape
 
             int zombieAmount = 0;
 
-            switch (Player.List.Count)
+            switch (Player.List.Where(x => !x.IsOverwatchEnabled).Count())
             {
                 case < 20:
                     zombieAmount = 2;
@@ -135,7 +135,7 @@ namespace AutoEvents.Events.ZombieEscape
             }
 
             Cassie.MessageTranslated("pitch_0.2 .g4 .g4 pitch_0.9 Alert . . An Infection has been jam_043_2 spotted in the facility . . All ClassD Personnel are required to evacuate to their nearest jam_043_5 Checkpoint immediately .",
-                "<color=red>Alert</color> : An infection has been spotted in the facility. All ClassD Personnel are required to evacuate to their nearest Checkpoint immediately.", default, false, default);
+                "<color=red>Alert</color> : An infection has been spotted in the facility. All ClassD Personnel are required to evacuate to their nearest Checkpoint immediately.", isNoisy: false);
         }
 
         // Use this method to return a bool to determine if the event should finish
@@ -216,13 +216,13 @@ namespace AutoEvents.Events.ZombieEscape
             if (EventTime.TotalSeconds == 90f)
             {
                 Cassie.MessageTranslated("pitch_0.2 .g4 .g4 pitch_0.9 Alert . . pitch_0.9 Light Containment jam_043_3 Zone Checkpoints . will open in T Minus 20 Seconds . . Please evacuate immediately",
-                    "<color=red>Alert</color> : <color=yellow>Light Containment Zone Checkpoints will open in T-20 Seconds. Please evacuate immediately.</color>", default, false, default);
+                    "<color=red>Alert</color> : <color=yellow>Light Containment Zone Checkpoints will open in T-20 Seconds. Please evacuate immediately.</color>", isNoisy: false);
             }
 
             if (EventTime.TotalSeconds == 110f)
             {
                 Cassie.MessageTranslated("pitch_0.2 .g4 .g4 pitch_0.9 Alert . . Any ClassD remaining in Light Containment Zone will die in T Minus 30 seconds",
-                    "<color=red>Alert</color> : Any ClassD remaining in Light Containment Zone will die in T-30 seconds.", default, false, default);
+                    "<color=red>Alert</color> : Any ClassD remaining in Light Containment Zone will die in T-30 seconds.", isNoisy: false);
             }
 
             if (EventTime.TotalSeconds == 130f)
@@ -237,7 +237,7 @@ namespace AutoEvents.Events.ZombieEscape
             if (EventTime.TotalSeconds == 140f)
             {
                 Cassie.MessageTranslated("pitch_0.2 .g4 .g4 pitch_0.9 Alert . . Any ClassD remaining in Light Containment Zone will die in T Minus 10 seconds",
-                    "<color=red>Alert</color> : Any ClassD remaining in Light Containment zone will die in T-10 seconds.", default, false, default);
+                    "<color=red>Alert</color> : Any ClassD remaining in Light Containment zone will die in T-10 seconds.", isNoisy: false);
             }
 
             if (EventTime.TotalSeconds == 160f)
@@ -267,13 +267,13 @@ namespace AutoEvents.Events.ZombieEscape
             if (EventTime.TotalSeconds == 330f)
             {
                 Cassie.MessageTranslated("pitch_0.2 .g4 .g4 pitch_0.9 Alert . . pitch_0.9 Heavy Containment jam_043_3 Zone Checkpoints . will open in T Minus 20 Seconds . . Please evacuate immediately",
-                    "<color=red>Alert</color> : <color=yellow> Heavy Containment Zone Checkpoints will open in T-10 seconds. Please evacuate immediately.</color>", default, false, default);
+                    "<color=red>Alert</color> : <color=yellow> Heavy Containment Zone Checkpoints will open in T-10 seconds. Please evacuate immediately.</color>", isNoisy: false);
             }
 
             if (EventTime.TotalSeconds == 350f)
             {
                 Cassie.MessageTranslated("pitch_0.2 .g4 .g4 pitch_0.9 Alert . . Any ClassD remaining in Heavy Containment Zone will die in T Minus 30 seconds",
-                    "<color=red>Alert</color> : Any ClassD remaining in Heavy Containment Zone will die in T-30 seconds", default, false, default);
+                    "<color=red>Alert</color> : Any ClassD remaining in Heavy Containment Zone will die in T-30 seconds", isNoisy: false);
             }
 
             if (EventTime.TotalSeconds == 370f)
@@ -288,7 +288,7 @@ namespace AutoEvents.Events.ZombieEscape
             if (EventTime.TotalSeconds == 375f)
             {
                 Cassie.MessageTranslated("pitch_0.2 .g4 .g4 pitch_0.9 Alert . . Any ClassD remaining in Heavy Containment Zone will die in T Minus 10 seconds",
-                    "<color=red>Alert</color> : Any ClassD remaining in Heavy Containment Zone will die in T-10 seconds.", default, false, default);
+                    "<color=red>Alert</color> : Any ClassD remaining in Heavy Containment Zone will die in T-10 seconds.", isNoisy: false);
             }
 
             if (EventTime.TotalSeconds == 390f)
@@ -319,13 +319,13 @@ namespace AutoEvents.Events.ZombieEscape
             if (EventTime.TotalSeconds == 580f)
             {
                 Cassie.MessageTranslated("pitch_0.2 .g4 .g4 pitch_0.9 Alert . . pitch_0.9 Entrance jam_043_3 Zone Gates . will open in T Minus 10 Seconds . . Please evacuate immediately",
-                    "<color=red>Alert</color> : <color=yellow>Entrance Zone Gates will open in T-10 seconds. Please evacuate immediately.", default, false, default);
+                    "<color=red>Alert</color> : <color=yellow>Entrance Zone Gates will open in T-10 seconds. Please evacuate immediately.", isNoisy: false);
             }
 
             if (EventTime.TotalSeconds == 600f)
             {
                 Cassie.MessageTranslated("pitch_0.2 .g4 .g4 pitch_0.9 <color=red> Alert . . </color> Any ClassD remaining in Entrance Zone will die in T Minus 30 seconds",
-                    "<color=red>Alert</color> : Any ClassD remaining in Entrance Zone will die in T-30 seconds", default, false, default);
+                    "<color=red>Alert</color> : Any ClassD remaining in Entrance Zone will die in T-30 seconds", isNoisy: false);
             }
 
             if (EventTime.TotalSeconds == 610f)
@@ -337,7 +337,7 @@ namespace AutoEvents.Events.ZombieEscape
             if (EventTime.TotalSeconds == 615f)
             {
                 Cassie.MessageTranslated("pitch_0.2 .g4 .g4 pitch_0.9 <color=red> Alert . . </color> Any ClassD remaining in Entrance Zone will die in T Minus 10 seconds",
-                    "<color=red>Alert<color> : Any ClassD remaining in Entrance Zone will die in T-10 seconds.", default, false, default);
+                    "<color=red>Alert<color> : Any ClassD remaining in Entrance Zone will die in T-10 seconds.", isNoisy: false);
             }
 
             if (EventTime.TotalSeconds == 635f)

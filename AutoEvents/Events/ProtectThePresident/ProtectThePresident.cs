@@ -82,7 +82,7 @@ namespace AutoEvents.Events.ProtectThePresident
                 door.ChangeLock(DoorLockType.AdminCommand);
             }
 
-            foreach(Player player in Player.List)
+            foreach(Player player in Player.List.Where(x => !x.IsOverwatchEnabled))
             {
                 player.Role.Set(_config.MainRole);
                 player.Position = Room.Get(_config.MainRoom).WorldPosition(_config.MainRelativePosition);
@@ -93,7 +93,7 @@ namespace AutoEvents.Events.ProtectThePresident
 
             int guardAmount = 0;
 
-            switch (Player.List.Count)
+            switch (Player.List.Where(x => !x.IsOverwatchEnabled).Count())
             {
                 case < 20:
                     guardAmount = 2;
@@ -182,7 +182,6 @@ namespace AutoEvents.Events.ProtectThePresident
         // This executes only if the event finishes. If the event is stopped. OnStop will be called instead.
         protected override void OnEnd()
         {
-            // ALWAYS call this on round end! _winner and _winnerSide can be null/Side.None
             WinnerController.HandleEventWinner(_winner, _winnerSide, _config.EndMessage);
         }
 

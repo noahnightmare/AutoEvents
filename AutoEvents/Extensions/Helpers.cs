@@ -51,11 +51,5 @@ namespace AutoEvents.Extensions
                     return "Other";
             }
         }
-
-        // helper to deserialize custom type
-        public static Type DeserializeConfig<Type>(string filePath)
-        {
-            return Loader.Deserializer.Deserialize<Type>(File.ReadAllText(filePath));
-        }
     }
 }

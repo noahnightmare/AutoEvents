@@ -13,6 +13,7 @@ namespace AutoEvents.Events.TeamDeathmatch
 {
     public class Config : EventConfig
     {
+        public override string EndMessage { get; set; } = "<b>Congratulations to the <color=purple>{side}</color> team!\nThey won the event!</b>";
         public RoleTypeId FirstRole { get; set; } = RoleTypeId.ChaosRifleman;
         public RoleTypeId SecondRole { get; set; } = RoleTypeId.NtfSergeant;
         public RoomType FirstRoom { get; set; } = RoomType.Surface;

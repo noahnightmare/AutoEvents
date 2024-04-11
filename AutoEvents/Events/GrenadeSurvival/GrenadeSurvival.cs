@@ -67,7 +67,7 @@ namespace AutoEvents.Events.GrenadeSurvival
             _winner = null;
             _winnerSide = Side.None;
 
-            foreach (Player player in Player.List)
+            foreach (Player player in Player.List.Where(x => !x.IsOverwatchEnabled))
             {
                 player.Role.Set(_config.Role);
                 player.Health = _config.Health;
@@ -90,7 +90,7 @@ namespace AutoEvents.Events.GrenadeSurvival
                 Map.Broadcast(1, $"{i}");
             }
 
-            _coroutine = Timing.RunCoroutine(SpawnGrenade().CancelWith(() => _winner != null), "Spawn Grenade");
+            _coroutine = Timing.RunCoroutine(SpawnGrenade(), "Spawn Grenade");
         }
 
         // Use this method to return a bool to determine if the event should finish

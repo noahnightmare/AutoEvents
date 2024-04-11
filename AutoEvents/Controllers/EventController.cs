@@ -31,6 +31,9 @@ namespace AutoEvents.Controllers
 
         public EventController(Event currentEvent, Player requestedPlayer) 
         {
+            AutoEvents.isEventRunning = true;
+            AutoEvents.currentEvent = currentEvent;
+
             _currentEvent = currentEvent;
             _requestedPlayer = requestedPlayer;
 
@@ -38,6 +41,9 @@ namespace AutoEvents.Controllers
             {
                 Round.IsLocked = true;
             }
+
+            Log.Info($"Event happening on this round: {_currentEvent.Name}");
+            Map.ClearBroadcasts();
 
             _killLoops = false;
 
@@ -52,10 +58,10 @@ namespace AutoEvents.Controllers
 
         public void Destroy()
         {
-            if (_currentEvent.eventType == EventType.Event)
-            {
-                Round.IsLocked = true;
-            }
+            AutoEvents.isEventRunning = false;
+            AutoEvents.currentEvent = null;
+
+            Round.IsLocked = false;
 
             _currentEvent = null;
             _requestedPlayer = null;
@@ -77,7 +83,6 @@ namespace AutoEvents.Controllers
         {
             // Safely start the event on round start
             _currentEvent.StartEvent();
-            AutoEvents.currentEvent = _currentEvent;
         }
 
         private IEnumerator<float> ShowEventName()

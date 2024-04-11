@@ -229,7 +229,6 @@ namespace AutoEvents.Models
         {
             KillLoops = false;
             _cleanupRan = false;
-            AutoEvents.currentEvent = this;
             EventTime = new TimeSpan();
             StartTime = DateTime.UtcNow;
 
@@ -244,6 +243,8 @@ namespace AutoEvents.Models
                 Log.Error($"Error at Event.RegisterEvents()");
                 Log.Error($"{e}");
             }
+
+            Map.ClearBroadcasts();
 
             try
             {
@@ -342,9 +343,7 @@ namespace AutoEvents.Models
                 Log.Error($"{e}");
             }
 
-            AutoEvents.currentEvent = null;
-
-            if (eventType != EventType.NormalRound)
+            if (eventType == EventType.Event)
             {
                 Round.Restart(false);
             }

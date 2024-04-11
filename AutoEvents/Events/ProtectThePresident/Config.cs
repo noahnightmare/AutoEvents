@@ -13,6 +13,7 @@ namespace AutoEvents.Events.ProtectThePresident
 {
     public class Config : EventConfig
     {
+        public override string EndMessage { get; set; } = "<b>Congratulations to the <color=purple>{side}</color> team!\nThey won the event!</b>";
         public RoleTypeId MainRole { get; set; } = RoleTypeId.ChaosRifleman;
         public RoleTypeId PresidentRole { get; set; } = RoleTypeId.Scientist;
         public RoleTypeId PresidentGuardRole { get; set; } = RoleTypeId.NtfCaptain;

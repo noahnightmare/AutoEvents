@@ -66,7 +66,7 @@ namespace AutoEvents.Events.BallSurvival
             _winnerSide = Side.None;
 
             Map.Broadcast(200, "<b>Ball Survival\nSCP-018 will drop every <color=red>20 seconds</color> on a random target!</b>");
-            foreach(Player player in Player.List)
+            foreach(Player player in Player.List.Where(x => !x.IsOverwatchEnabled))
             {
                 player.Role.Set(_config.Role);
                 player.Health = _config.Health;
@@ -84,7 +84,7 @@ namespace AutoEvents.Events.BallSurvival
                 lift.ChangeLock(DoorLockReason.AdminCommand);
             }
 
-            _coroutine = Timing.RunCoroutine(SpawnBall().CancelWith(() => _winner != null), "Spawn Ball");
+            _coroutine = Timing.RunCoroutine(SpawnBall(), "Spawn Ball");
         }
 
         // Use this method to return a bool to determine if the event should finish

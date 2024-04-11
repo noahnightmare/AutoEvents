@@ -19,6 +19,7 @@ using Exiled.API.Features.Pickups.Projectiles;
 using Exiled.API.Extensions;
 using InventorySystem.Items.Pickups;
 using Interactables.Interobjects.DoorUtils;
+using CustomPlayerEffects;
 
 namespace AutoEvents.Events.PeanutSurvival
 {
@@ -68,7 +69,7 @@ namespace AutoEvents.Events.PeanutSurvival
             _winnerSide = Side.None;
 
             Map.Broadcast(200, "<b>Peanut Survival\n<color=orange>Be the last Class D remaining!</color></b>");
-            foreach(Player player in Player.List)
+            foreach(Player player in Player.List.Where(x => !x.IsOverwatchEnabled))
             {
                 player.Role.Set(_config.Role);
                 player.Position = Room.Get(_config.Room).WorldPosition(_config.PlayerRelativePosition);
@@ -92,7 +93,7 @@ namespace AutoEvents.Events.PeanutSurvival
             }
 
             Cassie.MessageTranslated("jam_010_2 SCP 1 7 3 pitch_0.9 has breached containment . pitch_0.9 All ClassD Personnel must jam_020_2 pitch_0.7 run pitch_0.8 immediately . ",
-                "<color=red>SCP-173 has breached containment.</color> All ClassD Personnel must run immediately.", default, default, default);
+                "<color=red>SCP-173 has breached containment.</color> All ClassD Personnel must run immediately.");
 
             Timing.CallDelayed(10f, () => { Door.Get(DoorType.Scp079Second).IsOpen = true; });
         }
@@ -101,7 +102,7 @@ namespace AutoEvents.Events.PeanutSurvival
         // If it returns false, the event will continue running through ProcessEventLogic()
         protected override bool IsEventDone()
         {
-            if (Player.List.Count(x => x.Role <= _config.Role) <= 1 && _winner == null)
+            if (Player.List.Count(x => x.Role == _config.Role) <= 1 && _winner == null)
             {
                 _winner = Player.List.FirstOrDefault(x => x.Role == _config.Role);
                 return true;
@@ -117,7 +118,11 @@ namespace AutoEvents.Events.PeanutSurvival
         // Use coroutineDelay to change the delay between each run
         protected override void ProcessEventLogic()
         {
-            
+            foreach (Player player in Player.List.Where(x => x.Role == RoleTypeId.Spectator))
+            {
+                player.Role.Set(_config.peanutRole);
+                player.Position = Room.Get(_config.Room).WorldPosition(_config.PeanutRelativePosition);
+            }
         }
 
         // This executes only if the event finishes. If the event is stopped. OnStop will be called instead.

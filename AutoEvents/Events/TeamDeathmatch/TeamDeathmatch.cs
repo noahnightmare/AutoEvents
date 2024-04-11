@@ -75,23 +75,25 @@ namespace AutoEvents.Events.TeamDeathmatch
                 lift.ChangeLock(DoorLockReason.AdminCommand);
             }
 
-            List<Player> availablePlayersToAssign = new List<Player>(Player.List);
+            List<Player> availablePlayersToAssign = new List<Player>(Player.List.Where(x => !x.IsOverwatchEnabled));
 
             for (int i = 0; i < Player.List.Count / 2; i++)
             {
                 Player p = availablePlayersToAssign.GetRandomValue();
                 p.Role.Set(_config.FirstRole);
-                p.Position = Room.Get(_config.FirstRoom).WorldPosition(_config.FirstRelativePosition);
+                // USE POSITION ONLY WHEN TELEPORTING ON SURFACE, NOT WORLD POSITION
+                p.Position = _config.FirstRelativePosition;
                 availablePlayersToAssign.Remove(p);
             }
 
             foreach (Player player in availablePlayersToAssign)
             {
                 player.Role.Set(_config.SecondRole);
-                player.Position = Room.Get(_config.SecondRoom).WorldPosition(_config.SecondRelativePosition);
+                // USE POSITION ONLY WHEN TELEPORTING ON SURFACE, NOT WORLD POSITION
+                player.Position = _config.SecondRelativePosition;
             }
 
-            foreach(Player player in Player.List)
+            foreach(Player player in Player.List.Where(x => !x.IsOverwatchEnabled))
             {
                 player.EnableEffect<Ensnared>(1, 6);
             }
@@ -112,12 +114,12 @@ namespace AutoEvents.Events.TeamDeathmatch
 
             if (Player.List.Where(x => x.Role == _config.FirstRole).IsEmpty() && _winnerSide == Side.None)
             {
-                _winnerSide = _config.FirstRole.GetSide();
+                _winnerSide = _config.SecondRole.GetSide();
                 return true;
             }
             else if (Player.List.Where(x => x.Role == _config.SecondRole).IsEmpty() && _winnerSide == Side.None)
             {
-                _winnerSide = _config.SecondRole.GetSide();
+                _winnerSide = _config.FirstRole.GetSide();
                 return true;
             }
 

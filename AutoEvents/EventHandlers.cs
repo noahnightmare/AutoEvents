@@ -77,7 +77,7 @@ namespace AutoEvents
 
                 foreach (Player player in Player.List)
                 {
-                    if (player.UserId == WinnerController.winnerUserId)
+                    if (player.UserId == WinnerController.winner.UserId)
                     {
                         Log.Warn($"{player.Nickname} - winner found!");
                         winnerPreviousRole = player.Role;
@@ -89,12 +89,12 @@ namespace AutoEvents
                         else playerIsAlreadyWinnerRole = true;
                     }
 
-                    if (player.Role == WinnerController.winnerDesiredRole && player.UserId != WinnerController.winnerUserId)
+                    if (player.Role == WinnerController.winnerDesiredRole && player.UserId != WinnerController.winner.UserId)
                     {
                         PlayersOfWinnerRole.Add(player);
                     }
 
-                    if (RoleExtensions.GetTeam(player.Role) == Team.SCPs && player.UserId != WinnerController.winnerUserId)
+                    if (RoleExtensions.GetTeam(player.Role) == Team.SCPs && player.UserId != WinnerController.winner.UserId)
                     {
                         PlayersAsSCP.Add(player);
                     }

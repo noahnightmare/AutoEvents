@@ -9,6 +9,7 @@ using Exiled.API.Features;
 
 namespace AutoEvents.Commands
 {
+    [CommandHandler(typeof(GameConsoleCommandHandler))]
     [CommandHandler(typeof(RemoteAdminCommandHandler))]
     public class TpsCommand : ICommand
     {

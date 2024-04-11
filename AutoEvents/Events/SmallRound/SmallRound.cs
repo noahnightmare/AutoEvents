@@ -65,6 +65,8 @@ namespace AutoEvents.Events.SmallRound
             {
                 player.Scale = _config.Scale;
             }
+
+            Map.Broadcast(600, "<b>Small Round\n<color=red>Something doesn't feel right...</color></b>");
         }
 
         // Use this method to return a bool to determine if the event should finish

@@ -114,7 +114,7 @@ namespace AutoEvents.Controllers
             else colour = "white";
 
             // Append cancel option
-            hintBuilder.AppendLine($"<align=left><color=purple> [{_votingEvents.Count + 1}]</color> Cancel the Event Round | <color={colour}><b>{_cancelVotes} votes</b></color></align>");
+            hintBuilder.AppendLine($"<align=left><color=purple>                                     [{_votingEvents.Count + 1}]</color> Cancel the Event Round | <color={colour}><b>{_cancelVotes} votes</b></color></align>");
 
             return hintBuilder.ToString();
         }
@@ -127,7 +127,7 @@ namespace AutoEvents.Controllers
 
             yield return Timing.WaitForSeconds(10f);
 
-            Event outcome = CalculateVotedEvent().Event;
+            Event outcome = CalculateVotedEvent()?.Event;
 
             if (outcome != null)
             {

@@ -68,7 +68,7 @@ namespace AutoEvents.Events.NukeRun
 
             DecontaminationController.Singleton.DecontaminationOverride = DecontaminationController.DecontaminationStatus.Disabled;
 
-            foreach (Player player in Player.List)
+            foreach (Player player in Player.List.Where(x => !x.IsOverwatchEnabled))
             {
                 player.Role.Set(_config.Role);
                 player.AddItem(ItemType.SCP207, _config.AmountOf207ToGive);
