@@ -20,7 +20,7 @@ namespace AutoEvents.Controllers
         private static string CooldownPath = Path.Combine(Directory, Server.Port.ToString());
         private static string GlobalCooldown = Path.Combine(CooldownPath, "GlobalCooldown.yml");
         public Dictionary<string, LocalCooldown> _localCooldowns = new Dictionary<string, LocalCooldown>();
-        public  Cooldown _cooldown;
+        public Cooldown _cooldown;
         private List<CoroutineHandle> _cooldownControllerCoroutines = new List<CoroutineHandle>();
 
         // Handles queuing an event for next round

@@ -34,6 +34,9 @@ namespace AutoEvents.Controllers
             AutoEvents.isEventRunning = true;
             AutoEvents.currentEvent = currentEvent;
 
+            // reset the auto event cooldown
+            AutoEvents.Instance.CooldownController._cooldown.RemainingRoundsForAutoEvent = AutoEvents.Instance.Config.AutoEventAfterRounds;
+
             _currentEvent = currentEvent;
             _requestedPlayer = requestedPlayer;
 
@@ -54,6 +57,7 @@ namespace AutoEvents.Controllers
 
             Handler.Server.RestartingRound += OnRoundRestarting;
             Handler.Server.RoundStarted += OnRoundStarted;
+            Handler.Player.ChangingRole += OnChangingRole;
         } 
 
         public void Destroy()
@@ -77,6 +81,7 @@ namespace AutoEvents.Controllers
 
             Handler.Server.RestartingRound -= OnRoundRestarting;
             Handler.Server.RoundStarted -= OnRoundStarted;
+            Handler.Player.ChangingRole -= OnChangingRole;
         }
 
         private void OnRoundStarted()
@@ -139,6 +144,15 @@ namespace AutoEvents.Controllers
         {
             WinnerController.Kill();
             Destroy();
+        }
+
+        private void OnChangingRole(ChangingRoleEventArgs ev)
+        {
+            if (ev.Reason == SpawnReason.LateJoin)
+            {
+                ev.Items.Clear();
+                ev.NewRole = RoleTypeId.Spectator;
+            }
         }
     }
 }
