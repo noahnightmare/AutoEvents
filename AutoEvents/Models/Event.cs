@@ -298,6 +298,7 @@ namespace AutoEvents.Models
         private void OnInternalCleanup()
         {
             _cleanupRan = true;
+            Server.FriendlyFire = false;
             try
             {
                 UnregisterEvents();
