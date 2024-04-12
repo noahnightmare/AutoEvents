@@ -89,12 +89,13 @@ namespace AutoEvents.Events.HideAndSeekLight
 
             Timing.CallDelayed(_config.TimeToLetHidersHide, () =>
             {
-                foreach(Player player in Player.List.Where(x => x.Role == _config.SeekerRole))
+                foreach (Player player in Player.List.Where(x => x.Role == _config.SeekerRole || x.Role == _config.deadPlayerRole))
                 {
                     player.DisableEffect<Ensnared>();
-                    Cassie.MessageTranslated("jam_010_2 SCP 0 4 9 pitch_0.9 has breached containment . pitch_0.9 All ClassD Personnel must jam_020_2 pitch_0.7 run pitch_0.8 immediately . ",
-                        "<color=red>SCP-049 has breached containment.</color> All ClassD Personnel must run immediately.");
                 }
+
+                Cassie.MessageTranslated("jam_010_2 SCP 0 4 9 pitch_0.9 has breached containment . pitch_0.9 All ClassD Personnel must jam_020_2 pitch_0.7 run pitch_0.8 immediately . ",
+                        "<color=red>SCP-049 has breached containment.</color> All ClassD Personnel must run immediately.");
             });
 
             randomPlayer.ClearBroadcasts();
