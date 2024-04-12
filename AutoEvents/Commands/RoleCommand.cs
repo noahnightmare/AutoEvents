@@ -42,19 +42,19 @@ namespace AutoEvents.Commands
 
             if (WinnerController.winner == null)
             {
-                response = "You haven't won an event";
+                response = "You haven't won an event (1)";
                 return false;
             }
 
-            if (!Round.IsStarted)
+            if (!WinnerController.canUseRoleCommand)
             {
-                response = "You haven't won an event";
+                response = "You haven't won an event (2)";
                 return false;
             }
 
-            if (p != WinnerController.winner)
+            if (p.UserId != WinnerController.winner.UserId)
             {
-                response = "You haven't won an event";
+                response = "You haven't won an event (3)";
                 return false;
             }
 

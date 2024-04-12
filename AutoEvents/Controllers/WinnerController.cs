@@ -18,6 +18,7 @@ namespace AutoEvents.Controllers
         public static Player winner { get; set; } = null;
         public static Side winnerSide { get; set; } = Side.None;
         public static RoleTypeId winnerDesiredRole { get; set; } = RoleTypeId.None;
+        public static bool canUseRoleCommand { get; set; } = false;
 
         private static CoroutineHandle internalRoleChoiceCoroutine;
 
@@ -33,7 +34,8 @@ namespace AutoEvents.Controllers
             if (winner != null)
             {
                 Map.Broadcast(30, broadcastMessage.Replace("{name}", winner.Nickname));
-                internalRoleChoiceCoroutine = Timing.RunCoroutine(RoleOnEnded(winner).CancelWith(winner.GameObject), "Role On Ended");
+                canUseRoleCommand = true;
+                internalRoleChoiceCoroutine = Timing.RunCoroutine(RoleOnEnded().CancelWith(winner.GameObject), "Role On Ended");
             }
             // Winner side
             else if (winnerSide != Side.None)
@@ -47,13 +49,23 @@ namespace AutoEvents.Controllers
             }
         }
 
-        private static IEnumerator<float> RoleOnEnded(Player player)
+        private static IEnumerator<float> RoleOnEnded()
         {
             while (true)
             {
+                winner.ShowHint($"<b>You won the event, select a role to play as on the next round\nUse command .role RoleType\nRoles:\n<color=orange>ClassD</color>\n<color=#808080>FacilityGuard</color>\n<color=yellow>Scientist</color>\n<color=red>Scp049\nScp173\nScp939\nScp096\nScp106\nScp079\nScp3114</color>\n<color=green>Role Selected</color>: <color={winnerDesiredRole.GetColor().ToHex()}>{winnerDesiredRole}</color></b>", 1.1f);
                 yield return Timing.WaitForSeconds(1f);
-                player.ShowHint($"<b>You won the event, select a role to play as on the next round\nUse command .role RoleType\nRoles:\n<color=orange>ClassD</color>\n<color=#808080>FacilityGuard</color>\n<color=yellow>Scientist</color>\n<color=red>Scp049\nScp173\nScp939\nScp096\nScp106\nScp079\nScp3114</color>\n<color=green>Role Selected</color>: <color={winnerDesiredRole.GetColor().ToHex()}>{winnerDesiredRole}</color></b>", 1.1f);
             }
+        }
+
+        public static IEnumerator<float> RoleOnRoundStart(Player player)
+        {
+            while (!Round.IsStarted)
+            {
+                player.ShowHint($"\n\n\n\n\n\n\n\n\n<b>You won the event, select a role to play as this round\nUse command .role RoleType\nRoles:\n<color=orange>ClassD</color> | <color=#808080>FacilityGuard</color> | <color=yellow>Scientist</color>\n<color=red>Scp049 | Scp173 | Scp939 | Scp096 | Scp106 | Scp079 | Scp3114</color>\n<color=green>Role Selected</color>: <color={winnerDesiredRole.GetColor().ToHex()}>{winnerDesiredRole}</color></b>", 1.1f);
+                yield return Timing.WaitForSeconds(1f);
+            }
+            yield break;
         }
 
         public static void Reset()
@@ -61,11 +73,13 @@ namespace AutoEvents.Controllers
             winner = null;
             winnerSide = Side.None;
             winnerDesiredRole = RoleTypeId.None;
+            
             Kill();
         }
 
         public static void Kill()
         {
+            canUseRoleCommand = false; // not needed really but it's here to reset the variable (its set to false on round start)
             Timing.KillCoroutines(new CoroutineHandle[] { internalRoleChoiceCoroutine });
         }
     }

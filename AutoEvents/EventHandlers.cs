@@ -3,6 +3,7 @@ using AutoEvents.Controllers;
 using Exiled.API.Enums;
 using Exiled.API.Extensions;
 using Exiled.API.Features;
+using Exiled.Events.EventArgs.Player;
 using Exiled.Events.EventArgs.Server;
 using MEC;
 using PlayerRoles;
@@ -19,16 +20,20 @@ namespace AutoEvents
         Random rng = new Random();
         private RoleTypeId winnerPreviousRole = RoleTypeId.ClassD;
 
+        private CoroutineHandle winnerRoleChoiceCoro;
+
         public void Init()
         {
             Handler.Server.RoundStarted += OnRoundStart;
             Handler.Server.WaitingForPlayers += OnWaitingForPlayers;
+            Handler.Player.Verified += OnVerified;
         }
 
         public void UnInit()
         {
             Handler.Server.RoundStarted -= OnRoundStart;
             Handler.Server.WaitingForPlayers -= OnWaitingForPlayers;
+            Handler.Player.Verified -= OnVerified;
         }
 
         private IEnumerator<float> SwitchRoles(Player player, RoleTypeId role, bool isWinner)
@@ -48,6 +53,16 @@ namespace AutoEvents
             }
             yield break;
         }
+        
+        public void OnVerified(VerifiedEventArgs ev)
+        {
+            if (WinnerController.winner == null) return;
+
+            if (ev.Player.UserId == WinnerController.winner.UserId)
+            {
+                winnerRoleChoiceCoro = Timing.RunCoroutine(WinnerController.RoleOnRoundStart(ev.Player), "Role On Round Start");
+            }
+        }
 
         public void OnWaitingForPlayers()
         {
@@ -59,13 +74,23 @@ namespace AutoEvents
 
         public void OnRoundStart()
         {
-            if (WinnerController.winnerDesiredRole == RoleTypeId.None || WinnerController.winner == null)
+            if (WinnerController.winner == null)
             {
                 return;
             }
 
+            // disallows command from being used after round starts
+            Timing.KillCoroutines(new CoroutineHandle[] { winnerRoleChoiceCoro });
+            WinnerController.canUseRoleCommand = false;
+            WinnerController.Kill();
+
             // Resets winners 15 seconds into the game
             Timing.CallDelayed(15f, WinnerController.Reset);
+
+            if (WinnerController.winnerDesiredRole == RoleTypeId.None)
+            {
+                return;
+            }
 
             List<Player> PlayersOfWinnerRole = new List<Player>();
             List<Player> PlayersAsSCP = new List<Player>();

@@ -142,7 +142,6 @@ namespace AutoEvents.Controllers
 
         private void OnRoundRestarting()
         {
-            WinnerController.Kill();
             Destroy();
         }
 
