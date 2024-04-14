@@ -40,7 +40,7 @@ namespace AutoEvents.Controllers
             // initialise 3 random events
             for (int i = 0; i < amountOfVotingEvents; i++)
             {
-                Event eventPicked = Event.Events[Rand.Next(Event.Events.Count)];
+                Event eventPicked = _possibleEvents[Rand.Next(Event.Events.Count)];
                 _votingEvents.Add(new VoteEvent { Event = eventPicked, Votes = 0 });
                 _possibleEvents.Remove(eventPicked);
             }

@@ -21,6 +21,7 @@ using InventorySystem.Items.Pickups;
 using Interactables.Interobjects.DoorUtils;
 using CustomPlayerEffects;
 using LightContainmentZoneDecontamination;
+using Exiled.Events.EventArgs.Player;
 
 namespace AutoEvents.Events.HideAndSeekHeavy
 {
@@ -32,8 +33,9 @@ namespace AutoEvents.Events.HideAndSeekHeavy
         public override EventType eventType { get; set; } = EventType.Event;
         public override string CommandName { get; set; } = "hash";
 
-        private Player _winner { get; set; } = null;
-        private Side _winnerSide { get; set; } = Side.None;
+        private Player _winner { get; set; }
+        private Side _winnerSide { get; set; }
+        private Player _lastAlive { get; set; }
 
         // event handlers, unique per plugin
         // register game logic within EventHandler per event
@@ -52,6 +54,7 @@ namespace AutoEvents.Events.HideAndSeekHeavy
             Handlers.Player.PickingUpItem += _handler.OnPickingUpItem;
             Handlers.Map.AnnouncingScpTermination += _handler.OnAnnouncingScpTermination;
             Handlers.Player.PlayerDamageWindow += _handler.OnPlayerDamageWindow;
+            Handlers.Player.Dying += OnDying;
         }
 
         // events unregistered when the event finishes
@@ -62,6 +65,7 @@ namespace AutoEvents.Events.HideAndSeekHeavy
             Handlers.Player.PickingUpItem -= _handler.OnPickingUpItem;
             Handlers.Map.AnnouncingScpTermination -= _handler.OnAnnouncingScpTermination;
             Handlers.Player.PlayerDamageWindow -= _handler.OnPlayerDamageWindow;
+            Handlers.Player.Dying -= OnDying;
             _handler = null;
         }
 
@@ -70,6 +74,7 @@ namespace AutoEvents.Events.HideAndSeekHeavy
         {
             _winner = null;
             _winnerSide = Side.None;
+            _lastAlive = null;
 
             DecontaminationController.Singleton.DecontaminationOverride = DecontaminationController.DecontaminationStatus.Disabled;
 
@@ -121,9 +126,15 @@ namespace AutoEvents.Events.HideAndSeekHeavy
         // If it returns false, the event will continue running through ProcessEventLogic()
         protected override bool IsEventDone()
         {
-            if (Player.List.Count(x => x.Role == _config.Role) <= 1 && _winner == null)
+            if (Player.List.Count(x => x.Role <= _config.Role) == 1)
             {
                 _winner = Player.List.FirstOrDefault(x => x.Role == _config.Role);
+                return true;
+            }
+
+            if (Player.List.Count(x => x.Role <= _config.Role) == 0)
+            {
+                _winner = _lastAlive;
                 return true;
             }
 
@@ -176,6 +187,12 @@ namespace AutoEvents.Events.HideAndSeekHeavy
         protected override void OnCleanup()
         {
            
+        }
+
+        private void OnDying(DyingEventArgs ev)
+        {
+            if (ev.Player == null) return;
+            _lastAlive = ev.Player;
         }
     }
 }

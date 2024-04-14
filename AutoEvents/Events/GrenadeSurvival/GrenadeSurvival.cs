@@ -21,6 +21,7 @@ using InventorySystem.Items.Pickups;
 using Interactables.Interobjects.DoorUtils;
 using Exiled.API.Features.Items;
 using JetBrains.Annotations;
+using Exiled.Events.EventArgs.Player;
 
 namespace AutoEvents.Events.GrenadeSurvival
 {
@@ -34,6 +35,7 @@ namespace AutoEvents.Events.GrenadeSurvival
 
         private Player _winner { get; set; }
         private Side _winnerSide { get; set; }
+        private Player _lastAlive { get; set; } 
 
         // event handlers, unique per plugin
         // register game logic within EventHandler per event
@@ -50,6 +52,7 @@ namespace AutoEvents.Events.GrenadeSurvival
             Handlers.Server.RespawningTeam += _handler.OnRespawningTeam;
             Handlers.Warhead.Starting += _handler.OnWarheadStarting;
             Handlers.Player.PickingUpItem += _handler.OnPickingUpItem;
+            Handlers.Player.Dying += OnDying;
         }
 
         // events unregistered when the event finishes
@@ -58,6 +61,7 @@ namespace AutoEvents.Events.GrenadeSurvival
             Handlers.Server.RespawningTeam -= _handler.OnRespawningTeam;
             Handlers.Warhead.Starting -= _handler.OnWarheadStarting;
             Handlers.Player.PickingUpItem -= _handler.OnPickingUpItem;
+            Handlers.Player.Dying -= OnDying;
             _handler = null;
         }
 
@@ -66,6 +70,7 @@ namespace AutoEvents.Events.GrenadeSurvival
         {
             _winner = null;
             _winnerSide = Side.None;
+            _lastAlive = null;
 
             foreach (Player player in Player.List.Where(x => !x.IsOverwatchEnabled))
             {
@@ -97,9 +102,15 @@ namespace AutoEvents.Events.GrenadeSurvival
         // If it returns false, the event will continue running through ProcessEventLogic()
         protected override bool IsEventDone()
         {
-            if (Player.List.Count(x => x.Role <= _config.Role) <= 1 && _winner == null)
+            if (Player.List.Count(x => x.Role <= _config.Role) == 1)
             {
                 _winner = Player.List.FirstOrDefault(x => x.Role == _config.Role);
+                return true;
+            }
+
+            if (Player.List.Count(x => x.Role <= _config.Role) == 0)
+            {
+                _winner = _lastAlive;
                 return true;
             }
 
@@ -207,6 +218,12 @@ namespace AutoEvents.Events.GrenadeSurvival
 
                 yield return Timing.WaitForSeconds(currentDelay);
             }
+        }
+
+        private void OnDying(DyingEventArgs ev)
+        {
+            if (ev.Player == null) return;
+            _lastAlive = ev.Player;
         }
     }
 }

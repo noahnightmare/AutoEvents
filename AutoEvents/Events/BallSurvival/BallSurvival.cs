@@ -19,6 +19,7 @@ using Exiled.API.Features.Pickups.Projectiles;
 using Exiled.API.Extensions;
 using InventorySystem.Items.Pickups;
 using Interactables.Interobjects.DoorUtils;
+using Exiled.Events.EventArgs.Player;
 
 namespace AutoEvents.Events.BallSurvival
 {
@@ -32,6 +33,7 @@ namespace AutoEvents.Events.BallSurvival
 
         private Player _winner { get; set; }
         private Side _winnerSide { get; set; }
+        private Player _lastAlive { get; set; }
 
         // event handlers, unique per plugin
         // register game logic within EventHandler per event
@@ -48,6 +50,7 @@ namespace AutoEvents.Events.BallSurvival
             Handlers.Server.RespawningTeam += _handler.OnRespawningTeam;
             Handlers.Warhead.Starting += _handler.OnWarheadStarting;
             Handlers.Player.PickingUpItem += _handler.OnPickingUpItem;
+            Handlers.Player.Dying += OnDying;
         }
 
         // events unregistered when the event finishes
@@ -56,6 +59,7 @@ namespace AutoEvents.Events.BallSurvival
             Handlers.Server.RespawningTeam -= _handler.OnRespawningTeam;
             Handlers.Warhead.Starting -= _handler.OnWarheadStarting;
             Handlers.Player.PickingUpItem -= _handler.OnPickingUpItem;
+            Handlers.Player.Dying -= OnDying;
             _handler = null;
         }
 
@@ -64,6 +68,7 @@ namespace AutoEvents.Events.BallSurvival
         {
             _winner = null;
             _winnerSide = Side.None;
+            _lastAlive = null;
 
             Map.Broadcast(200, "<b>Ball Survival\nSCP-018 will drop every <color=red>20 seconds</color> on a random target!</b>");
             foreach(Player player in Player.List.Where(x => !x.IsOverwatchEnabled))
@@ -91,9 +96,15 @@ namespace AutoEvents.Events.BallSurvival
         // If it returns false, the event will continue running through ProcessEventLogic()
         protected override bool IsEventDone()
         {
-            if (Player.List.Count(x => x.Role <= _config.Role) <= 1 && _winner == null)
+            if (Player.List.Count(x => x.Role <= _config.Role) == 1)
             {
                 _winner = Player.List.FirstOrDefault(x => x.Role == _config.Role);
+                return true;
+            }
+
+            if (Player.List.Count(x => x.Role <= _config.Role) == 0)
+            {
+                _winner = _lastAlive;
                 return true;
             }
 
@@ -160,6 +171,12 @@ namespace AutoEvents.Events.BallSurvival
                 Projectile.CreateAndSpawn(ItemType.SCP018, randomPlayer.Position, default, randomPlayer).GameObject.GetComponent<Rigidbody>().AddForce(new Vector3(500, 500, 500));
                 yield return Timing.WaitForSeconds(20f);
             }
+        }
+
+        private void OnDying(DyingEventArgs ev)
+        {
+            if (ev.Player == null) return;
+            _lastAlive = ev.Player;
         }
     }
 }
