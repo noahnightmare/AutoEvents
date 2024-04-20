@@ -86,8 +86,11 @@ namespace AutoEvents.Controllers
 
         private void OnRoundStarted()
         {
-            // Safely start the event on round start
-            _currentEvent.StartEvent();
+            Timing.CallDelayed(0.25f, () =>
+            {
+                // Safely start the event on round start
+                _currentEvent.StartEvent();
+            });
         }
 
         private IEnumerator<float> ShowEventName()
