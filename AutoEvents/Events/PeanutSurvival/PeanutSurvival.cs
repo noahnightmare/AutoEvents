@@ -107,13 +107,13 @@ namespace AutoEvents.Events.PeanutSurvival
         // If it returns false, the event will continue running through ProcessEventLogic()
         protected override bool IsEventDone()
         {
-            if (Player.List.Count(x => x.Role <= _config.Role) == 1)
+            if (Player.List.Count(x => x.Role == _config.Role) == 1)
             {
                 _winner = Player.List.FirstOrDefault(x => x.Role == _config.Role);
                 return true;
             }
 
-            if (Player.List.Count(x => x.Role <= _config.Role) == 0)
+            if (Player.List.Count(x => x.Role == _config.Role) == 0)
             {
                 _winner = _lastAlive;
                 return true;
