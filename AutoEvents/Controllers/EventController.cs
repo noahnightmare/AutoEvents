@@ -31,6 +31,7 @@ namespace AutoEvents.Controllers
 
         public EventController(Event currentEvent, Player requestedPlayer) 
         {
+            Log.Info("New Event Controller!!!!!!!!!!!!!!!!");
             AutoEvents.isEventRunning = true;
             AutoEvents.currentEvent = currentEvent;
 
@@ -62,8 +63,9 @@ namespace AutoEvents.Controllers
 
         public void Destroy()
         {
-            AutoEvents.isEventRunning = false;
+            Log.Info("Destroy called!!!!!!!!!!!!!!!!!!");
             AutoEvents.currentEvent = null;
+            AutoEvents.isEventRunning = false;
 
             Round.IsLocked = false;
 
@@ -145,6 +147,7 @@ namespace AutoEvents.Controllers
 
         private void OnRoundRestarting()
         {
+            Log.Info("Round restarting!!!!!!!!!!!!");
             Destroy();
         }
 

@@ -139,7 +139,7 @@ namespace AutoEvents.Controllers
 
         private IEnumerator<float> AutoEvent()
         {
-            while (!Round.IsStarted && !AutoEvents.isEventRunning && _cooldown.RemainingRoundsForAutoEvent == 0)
+            while (!Round.IsStarted && !AutoEvents.isEventRunning && !AutoEvents.isEventVoteRunning && _cooldown.RemainingRoundsForAutoEvent == 0)
             {
                 if (Player.List.Count() >= AutoEvents.Instance.Config.MinimumPlayersToRequest)
                 {
@@ -154,7 +154,7 @@ namespace AutoEvents.Controllers
         // starts the voting sequence for events
         public void StartEventVoting()
         {
-            if (AutoEvents.isEventRunning)
+            if (AutoEvents.isEventRunning || AutoEvents.isEventVoteRunning)
                 return;
 
             Log.Info($"Event voting started!");

@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using UnityEngine;
 using YamlDotNet.Core.Events;
 
+using Handlers = Exiled.Events.Handlers;
+
 namespace AutoEvents.Controllers
 {
     public class EventVoteController
@@ -28,7 +30,6 @@ namespace AutoEvents.Controllers
 
         public EventVoteController()
         {
-            AutoEvents.isEventRunning = true;
             AutoEvents.isEventVoteRunning = true;
 
             _killLoops = false;
@@ -49,12 +50,13 @@ namespace AutoEvents.Controllers
             Round.IsLobbyLocked = true;
             _coroutines.Add(Timing.RunCoroutine(ShowEventName(), "Show Event Name"));
             _coroutines.Add(Timing.RunCoroutine(WaitToCheckVotes(), "Wait Check Votes"));
+
+            Handlers.Server.RestartingRound += OnRestartingRound;
         }
 
         private void Destroy()
         {
             AutoEvents.isEventVoteRunning = false;
-            AutoEvents.isEventRunning = false;
 
             _killLoops = true;
 
@@ -68,6 +70,16 @@ namespace AutoEvents.Controllers
 
             _possibleEvents.Clear();
             _votingEvents?.Clear();
+
+            Handlers.Server.RestartingRound -= OnRestartingRound;
+        }
+
+        public void OnRestartingRound()
+        {
+            if (AutoEvents.isEventVoteRunning)
+            {
+                Destroy();
+            }
         }
 
         private IEnumerator<float> ShowEventName()
@@ -129,6 +141,8 @@ namespace AutoEvents.Controllers
 
             Event outcome = CalculateVotedEvent()?.Event;
 
+            Destroy();
+
             if (outcome != null)
             {
                 // initialise an event
@@ -139,7 +153,6 @@ namespace AutoEvents.Controllers
                 Map.Broadcast(10, "<b>Event was cancelled!</b>\nA normal round will play out.");
             }
 
-            Destroy();
             yield break;
         }
 

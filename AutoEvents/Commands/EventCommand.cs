@@ -37,26 +37,25 @@ namespace AutoEvents.Commands
                 }
             }
 
-            bool HasBypass = false;
-
-            if (player.CheckPermission("autoevents.bypass"))
-            {
-                HasBypass = true;
-            }
-
-            if (AutoEvents.shouldDisallowEventsThisRound && !HasBypass)
+            if (AutoEvents.shouldDisallowEventsThisRound)
             {
                 response = "The events are disabled for this round";
                 return false;
             }
 
-            if (AutoEvents.isEventRunning && !HasBypass)
+            if (AutoEvents.isEventRunning)
             {
                 response = "An event is running right now.";
                 return false;
             }
 
-            if (Player.List.Count() < AutoEvents.Instance.Config.MinimumPlayersToRequest && !HasBypass)
+            if (AutoEvents.isEventVoteRunning) 
+            {
+                response = "An event vote is running right now.";
+                return false;
+            }
+
+            if (Player.List.Count() < AutoEvents.Instance.Config.MinimumPlayersToRequest)
             {
                 response = $"You need {AutoEvents.Instance.Config.MinimumPlayersToRequest} players to request an event.";
                 return false;
@@ -96,7 +95,7 @@ namespace AutoEvents.Commands
                 return false;
             } */
 
-            if (player.HasLocalCooldown() && !HasBypass)
+            if (player.HasLocalCooldown())
             {
                 if (player.LocalCooldown().RemainingCooldownRounds > 0)
                 {
@@ -105,7 +104,7 @@ namespace AutoEvents.Commands
                 }
             }
 
-            if (AutoEvents.Instance.CooldownController._cooldown.GlobalCooldown > 0 && !HasBypass)
+            if (AutoEvents.Instance.CooldownController._cooldown.GlobalCooldown > 0)
             {
                 response = $"The global event cooldown is active, you must wait {AutoEvents.Instance.CooldownController._cooldown.GlobalCooldown} rounds more to use this command.";
                 return false;
@@ -115,16 +114,13 @@ namespace AutoEvents.Commands
             {
                 if (!AutoEvents.isEventRunning)
                 {
-                    if (!HasBypass)
+                    if (player.HasLocalCooldown())
                     {
-                        if (player.HasLocalCooldown())
-                        {
-                            player.LocalCooldown().RemainingCooldownRounds = AutoEvents.Instance.Config.LocalCooldown;
-                        }
-                        else
-                        {
-                            player.CreateLocalCooldown();
-                        }
+                        player.LocalCooldown().RemainingCooldownRounds = AutoEvents.Instance.Config.LocalCooldown;
+                    }
+                    else
+                    {
+                        player.CreateLocalCooldown();
                     }
 
                     AutoEvents.Instance.CooldownController._cooldown.GlobalCooldown = AutoEvents.Instance.Config.GlobalCooldown;
@@ -139,16 +135,13 @@ namespace AutoEvents.Commands
                 }
             }
 
-            if (!HasBypass)
+            if (player.HasLocalCooldown())
             {
-                if (player.HasLocalCooldown())
-                {
-                    player.LocalCooldown().RemainingCooldownRounds = AutoEvents.Instance.Config.LocalCooldown;
-                }
-                else
-                {
-                    player.CreateLocalCooldown();
-                }
+                player.LocalCooldown().RemainingCooldownRounds = AutoEvents.Instance.Config.LocalCooldown;
+            }
+            else
+            {
+                player.CreateLocalCooldown();
             }
 
             AutoEvents.Instance.CooldownController._cooldown.GlobalCooldown = AutoEvents.Instance.Config.GlobalCooldown;
