@@ -51,7 +51,7 @@ namespace AutoEvents.Controllers
             _coroutines.Add(Timing.RunCoroutine(ShowEventName(), "Show Event Name"));
             _coroutines.Add(Timing.RunCoroutine(WaitToCheckVotes(), "Wait Check Votes"));
 
-            Handlers.Server.RestartingRound += OnRestartingRound;
+            Handlers.Server.RoundStarted += OnRoundStarted;
         }
 
         private void Destroy()
@@ -68,13 +68,13 @@ namespace AutoEvents.Controllers
             // clears all votes when vote is over
             VoteCommand.playerVoted?.Clear();
 
-            _possibleEvents.Clear();
+            _possibleEvents?.Clear();
             _votingEvents?.Clear();
 
-            Handlers.Server.RestartingRound -= OnRestartingRound;
+            Handlers.Server.RoundStarted -= OnRoundStarted;
         }
 
-        public void OnRestartingRound()
+        public void OnRoundStarted()
         {
             if (AutoEvents.isEventVoteRunning)
             {

@@ -154,8 +154,7 @@ namespace AutoEvents.Controllers
         // starts the voting sequence for events
         public void StartEventVoting()
         {
-            if (AutoEvents.isEventRunning || AutoEvents.isEventVoteRunning)
-                return;
+            if (AutoEvents.isEventRunning || AutoEvents.isEventVoteRunning) return;
 
             Log.Info($"Event voting started!");
             new EventVoteController();
