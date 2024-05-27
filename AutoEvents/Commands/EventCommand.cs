@@ -24,6 +24,8 @@ namespace AutoEvents.Commands
 
         public string Description { get; } = "event <eventname>";
 
+        public bool HasBypass = false;
+
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
             Player player = Player.Get((sender as PlayerCommandSender).ReferenceHub);
@@ -35,6 +37,10 @@ namespace AutoEvents.Commands
                     response = "<color=red>You don't have permissions to use this command.</color>";
                     return false;
                 }
+            }
+            else
+            {
+                HasBypass = true;
             }
 
             if (AutoEvents.shouldDisallowEventsThisRound)
@@ -55,7 +61,7 @@ namespace AutoEvents.Commands
                 return false;
             }
 
-            if (Player.List.Count() < AutoEvents.Instance.Config.MinimumPlayersToRequest)
+            if (Player.List.Count() < AutoEvents.Instance.Config.MinimumPlayersToRequest && !HasBypass)
             {
                 response = $"You need {AutoEvents.Instance.Config.MinimumPlayersToRequest} players to request an event.";
                 return false;
@@ -95,7 +101,7 @@ namespace AutoEvents.Commands
                 return false;
             } */
 
-            if (player.HasLocalCooldown())
+            if (player.HasLocalCooldown() && !HasBypass)
             {
                 if (player.LocalCooldown().RemainingCooldownRounds > 0)
                 {
@@ -104,7 +110,7 @@ namespace AutoEvents.Commands
                 }
             }
 
-            if (AutoEvents.Instance.CooldownController._cooldown.GlobalCooldown > 0)
+            if (AutoEvents.Instance.CooldownController._cooldown.GlobalCooldown > 0 && !HasBypass)
             {
                 response = $"The global event cooldown is active, you must wait {AutoEvents.Instance.CooldownController._cooldown.GlobalCooldown} rounds more to use this command.";
                 return false;

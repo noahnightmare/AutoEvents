@@ -31,5 +31,7 @@ namespace AutoEvents.Events.DogHideAndSeek
         }
 
         public void OnAnnouncingScpTermination(AnnouncingScpTerminationEventArgs ev) => ev.IsAllowed = false;
+
+        public void OnAnnouncingNtfEntrance(AnnouncingNtfEntranceEventArgs ev) => ev.IsAllowed = false;
     }
 }

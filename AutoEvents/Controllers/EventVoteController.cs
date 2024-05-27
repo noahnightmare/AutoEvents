@@ -41,7 +41,7 @@ namespace AutoEvents.Controllers
             // initialise 3 random events
             for (int i = 0; i < amountOfVotingEvents; i++)
             {
-                Event eventPicked = _possibleEvents[Rand.Next(Event.Events.Count)];
+                Event eventPicked = _possibleEvents[Rand.Next(_possibleEvents.Count)];
                 _votingEvents.Add(new VoteEvent { Event = eventPicked, Votes = 0 });
                 _possibleEvents.Remove(eventPicked);
             }
@@ -50,8 +50,6 @@ namespace AutoEvents.Controllers
             Round.IsLobbyLocked = true;
             _coroutines.Add(Timing.RunCoroutine(ShowEventName(), "Show Event Name"));
             _coroutines.Add(Timing.RunCoroutine(WaitToCheckVotes(), "Wait Check Votes"));
-
-            Handlers.Server.RoundStarted += OnRoundStarted;
         }
 
         private void Destroy()
@@ -70,16 +68,6 @@ namespace AutoEvents.Controllers
 
             _possibleEvents?.Clear();
             _votingEvents?.Clear();
-
-            Handlers.Server.RoundStarted -= OnRoundStarted;
-        }
-
-        public void OnRoundStarted()
-        {
-            if (AutoEvents.isEventVoteRunning)
-            {
-                Destroy();
-            }
         }
 
         private IEnumerator<float> ShowEventName()
