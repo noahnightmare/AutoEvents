@@ -141,7 +141,7 @@ namespace AutoEvents.Controllers
         {
             while (!Round.IsStarted && !AutoEvents.isEventRunning && !AutoEvents.isEventVoteRunning && _cooldown.RemainingRoundsForAutoEvent == 0)
             {
-                if (/* Player.List.Count() >= AutoEvents.Instance.Config.MinimumPlayersToRequest */ true)
+                if (Player.List.Count() >= AutoEvents.Instance.Config.MinimumPlayersToRequest)
                 {
                     StartEventVoting();
                     yield break;
