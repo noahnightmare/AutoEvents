@@ -172,7 +172,7 @@ namespace AutoEvents.Events.ProtectThePresident
         // Use coroutineDelay to change the delay between each run
         protected override void ProcessEventLogic()
         {
-            if (Player.List.Count(x => x.Role == _config.PresidentGuardRole) == 0 && !presidentCanPickup)
+            if (Player.List.Count(x => x.Role == _config.PresidentGuardRole) == 0 && !presidentCanPickup && Round.ElapsedTime.TotalSeconds > 5)
             {
                 presidentCanPickup = true;
                 Player.Get(x => x.Role == _config.PresidentRole).FirstOrDefault().ShowHint("<b><color=red>All of your guards have died!</color>\nYou can now pick up items.\nDefend yourself!</b>");

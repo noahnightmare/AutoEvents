@@ -344,10 +344,27 @@ namespace AutoEvents.Models
                 Log.Error($"{e}");
             }
 
-            if (eventType == EventType.Event)
+
+            // all of the below happens instead of force restarting, since it collides with the FF on round end plugin
+            // which causes FF to be unnecessarily enabled the round after
+            // OnRoundEnded doesn't work properly and WILL be called the round after on occasion when it shouldn't be
+            foreach (Player player in Player.List.Where(x => x.IsAlive))
             {
-                Round.Restart(false);
+                player.Role.Set(RoleTypeId.Spectator);
             }
+
+            Round.IsLocked = false;
+
+            Timing.CallDelayed(2f, () => // contingency despawn
+            {
+                if (Player.List.Count(x => x.IsAlive) > 0)
+                {
+                    foreach (Player player in Player.List.Where(x => x.IsAlive))
+                    {
+                        player.Role.Set(RoleTypeId.Spectator);
+                    }
+                }
+            });
         }
 
         // delegates handling the current point in time that the event is in
