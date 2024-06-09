@@ -71,10 +71,10 @@ namespace AutoEvents.Events.NukeRun
             foreach (Player player in Player.List.Where(x => !x.IsOverwatchEnabled))
             {
                 player.Role.Set(_config.Role);
-                player.AddItem(ItemType.SCP207, _config.AmountOf207ToGive);
+                player.EnableEffect<MovementBoost>(50, 0); // uses this instead of cola because of the 13.5 nerf
             }
 
-            Map.Broadcast(200, "<b>Nuke Run\n<color=red>You get 4 Colas.</color>\nBe the first to escape in an exploding facility!</b>");
+            Map.Broadcast(200, "<b>Nuke Run\n<color=red>You are extremely fast.</color>\nBe the first to escape in an exploding facility!</b>");
            
             foreach (Door door in Door.List.Where(d => d.Type != DoorType.PrisonDoor))
             {
