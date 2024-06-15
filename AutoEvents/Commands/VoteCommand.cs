@@ -19,6 +19,8 @@ namespace AutoEvents.Commands
 
         public string Description => "Vote for an event on a voting round.";
 
+        public bool SanitizeResponse => false;
+
         public static Dictionary<Player, int> playerVoted= new Dictionary<Player, int>();
         private int _voteAmount = 1;
 

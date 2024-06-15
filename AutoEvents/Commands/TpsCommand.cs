@@ -19,6 +19,8 @@ namespace AutoEvents.Commands
 
         public string Description { get; } = "Checks the TPS of the server";
 
+        public bool SanitizeResponse => false;
+
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
             response = $"{(int)Server.Tps}/60";

@@ -175,7 +175,7 @@ namespace AutoEvents.Events.ZombieEscape
 
             foreach(Player player in Player.List.Where(x => x.IsAlive))
             {
-                if (player.Zone != currentZone)
+                if ((player.Zone & currentZone) == 0)
                 {
                     player.Kill(DamageType.Decontamination);
                 }
@@ -221,8 +221,8 @@ namespace AutoEvents.Events.ZombieEscape
 
             if (EventTime.TotalSeconds == 110f)
             {
-                Cassie.MessageTranslated("pitch_0.2 .g4 .g4 pitch_0.9 Alert . . Any ClassD remaining in Light Containment Zone will die in T Minus 30 seconds",
-                    "<color=red>Alert</color> : Any ClassD remaining in Light Containment Zone will die in T-30 seconds.", isNoisy: false);
+                Cassie.MessageTranslated("pitch_0.2 .g4 .g4 pitch_0.9 Alert . . Any ClassD remaining in Light Containment Zone will die in T Minus 60 seconds",
+                    "<color=red>Alert</color> : Any ClassD remaining in Light Containment Zone will die in T-60 seconds.", isNoisy: false);
             }
 
             if (EventTime.TotalSeconds == 130f)
@@ -232,22 +232,24 @@ namespace AutoEvents.Events.ZombieEscape
 
                 Door.Get(DoorType.CheckpointLczB).IsOpen = true;
                 Door.Get(DoorType.CheckpointLczB).ChangeLock(DoorLockType.Warhead);
+
+                currentZone |= ZoneType.HeavyContainment; // add heavy as valid zone
             }
 
             if (EventTime.TotalSeconds == 140f)
             {
-                Cassie.MessageTranslated("pitch_0.2 .g4 .g4 pitch_0.9 Alert . . Any ClassD remaining in Light Containment Zone will die in T Minus 10 seconds",
-                    "<color=red>Alert</color> : Any ClassD remaining in Light Containment zone will die in T-10 seconds.", isNoisy: false);
+                Cassie.MessageTranslated("pitch_0.2 .g4 .g4 pitch_0.9 Alert . . Any ClassD remaining in Light Containment Zone will die in T Minus 30 seconds",
+                    "<color=red>Alert</color> : Any ClassD remaining in Light Containment zone will die in T-30 seconds.", isNoisy: false);
             }
 
-            if (EventTime.TotalSeconds == 160f)
+            if (EventTime.TotalSeconds == 180f)
             {
                 foreach(Lift lift in Lift.List.Where(l => l.Type == ElevatorType.LczB || l.Type == ElevatorType.LczA)) 
                 {
                     lift.ChangeLock(DoorLockReason.AdminCommand);
                 }
 
-                currentZone = ZoneType.HeavyContainment;
+                currentZone &= ~ZoneType.LightContainment; // remove light as valid zone
 
                 Map.ClearBroadcasts();
                 Map.Broadcast(200, "<b><color=yellow>Zombies now respawn in Heavy.</color>\nZombies now have <color=red>750 HP</color> & move faster.\nPlayers now have <color=green>Crossvecs</color>!</b>");
@@ -272,8 +274,8 @@ namespace AutoEvents.Events.ZombieEscape
 
             if (EventTime.TotalSeconds == 350f)
             {
-                Cassie.MessageTranslated("pitch_0.2 .g4 .g4 pitch_0.9 Alert . . Any ClassD remaining in Heavy Containment Zone will die in T Minus 30 seconds",
-                    "<color=red>Alert</color> : Any ClassD remaining in Heavy Containment Zone will die in T-30 seconds", isNoisy: false);
+                Cassie.MessageTranslated("pitch_0.2 .g4 .g4 pitch_0.9 Alert . . Any ClassD remaining in Heavy Containment Zone will die in T Minus 60 seconds",
+                    "<color=red>Alert</color> : Any ClassD remaining in Heavy Containment Zone will die in T-60 seconds", isNoisy: false);
             }
 
             if (EventTime.TotalSeconds == 370f)
@@ -283,15 +285,17 @@ namespace AutoEvents.Events.ZombieEscape
 
                 Door.Get(DoorType.CheckpointEzHczB).IsOpen = true;
                 Door.Get(DoorType.CheckpointEzHczB).ChangeLock(DoorLockType.Warhead);
+
+                currentZone |= ZoneType.Entrance;
             }
 
             if (EventTime.TotalSeconds == 375f)
             {
-                Cassie.MessageTranslated("pitch_0.2 .g4 .g4 pitch_0.9 Alert . . Any ClassD remaining in Heavy Containment Zone will die in T Minus 10 seconds",
-                    "<color=red>Alert</color> : Any ClassD remaining in Heavy Containment Zone will die in T-10 seconds.", isNoisy: false);
+                Cassie.MessageTranslated("pitch_0.2 .g4 .g4 pitch_0.9 Alert . . Any ClassD remaining in Heavy Containment Zone will die in T Minus 30 seconds",
+                    "<color=red>Alert</color> : Any ClassD remaining in Heavy Containment Zone will die in T-30 seconds.", isNoisy: false);
             }
 
-            if (EventTime.TotalSeconds == 390f)
+            if (EventTime.TotalSeconds == 410f)
             {
                 Door.Get(DoorType.CheckpointEzHczA).IsOpen = false;
                 Door.Get(DoorType.CheckpointEzHczA).ChangeLock(DoorLockType.AdminCommand);
@@ -299,7 +303,7 @@ namespace AutoEvents.Events.ZombieEscape
                 Door.Get(DoorType.CheckpointEzHczB).IsOpen = false;
                 Door.Get(DoorType.CheckpointEzHczB).ChangeLock(DoorLockType.AdminCommand);
 
-                currentZone = ZoneType.Entrance;
+                currentZone &= ~ZoneType.HeavyContainment;
 
                 Map.ClearBroadcasts();
                 Map.Broadcast(200, "<b><color=yellow>Zombies now respawn in Entrance.</color>\nZombies now have <color=red>1000 HP</color>, <color=red>40 damage</color> & move faster.\nPlayers now have <color=green>E-11s</color>!</b>");
@@ -324,23 +328,25 @@ namespace AutoEvents.Events.ZombieEscape
 
             if (EventTime.TotalSeconds == 600f)
             {
-                Cassie.MessageTranslated("pitch_0.2 .g4 .g4 pitch_0.9 <color=red> Alert . . </color> Any ClassD remaining in Entrance Zone will die in T Minus 30 seconds",
-                    "<color=red>Alert</color> : Any ClassD remaining in Entrance Zone will die in T-30 seconds", isNoisy: false);
+                Cassie.MessageTranslated("pitch_0.2 .g4 .g4 pitch_0.9 <color=red> Alert . . </color> Any ClassD remaining in Entrance Zone will die in T Minus 60 seconds",
+                    "<color=red>Alert</color> : Any ClassD remaining in Entrance Zone will die in T-60 seconds", isNoisy: false);
             }
 
             if (EventTime.TotalSeconds == 610f)
             {
                 Door.Get(DoorType.GateA).IsOpen = true;
                 Door.Get(DoorType.GateB).IsOpen = true;
+
+                currentZone |= ZoneType.Other;
             }
 
             if (EventTime.TotalSeconds == 615f)
             {
-                Cassie.MessageTranslated("pitch_0.2 .g4 .g4 pitch_0.9 <color=red> Alert . . </color> Any ClassD remaining in Entrance Zone will die in T Minus 10 seconds",
-                    "<color=red>Alert<color> : Any ClassD remaining in Entrance Zone will die in T-10 seconds.", isNoisy: false);
+                Cassie.MessageTranslated("pitch_0.2 .g4 .g4 pitch_0.9 <color=red> Alert . . </color> Any ClassD remaining in Entrance Zone will die in T Minus 30 seconds",
+                    "<color=red>Alert<color> : Any ClassD remaining in Entrance Zone will die in T-30 seconds.", isNoisy: false);
             }
 
-            if (EventTime.TotalSeconds == 635f)
+            if (EventTime.TotalSeconds == 650f)
             {
                 Door.Get(DoorType.GateA).IsOpen = false;
                 Door.Get(DoorType.GateA).ChangeLock(DoorLockType.AdminCommand);
@@ -348,7 +354,7 @@ namespace AutoEvents.Events.ZombieEscape
                 Door.Get(DoorType.GateB).IsOpen = false;
                 Door.Get(DoorType.GateB).ChangeLock(DoorLockType.AdminCommand);
 
-                currentZone = ZoneType.Other;
+                currentZone &= ~ZoneType.Entrance;
 
                 Map.ClearBroadcasts();
                 Map.Broadcast(200, "<b><color=yellow>First person to get to the escape wins!!</color>\nZombies now have <color=red>1500 HP</color>, <color=red>50 damage</color> & move faster.\nPlayers now have <color=green>Captain Guns & Railguns</color>!</b>");

@@ -22,6 +22,8 @@ namespace AutoEvents.Commands
 
         public string Description => "Select the role to play as in the next round if you won the event.";
 
+        public bool SanitizeResponse => false;
+
         public static List<RoleTypeId> WhitelistedRoles = new List<RoleTypeId>()
         {
             RoleTypeId.ClassD,
