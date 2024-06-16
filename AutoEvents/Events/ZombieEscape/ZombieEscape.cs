@@ -84,8 +84,16 @@ namespace AutoEvents.Events.ZombieEscape
         // define what happens at the start of the event
         protected override void OnStart()
         {
+            // resetters
             _winner = null;
             _winnerSide = Side.None;
+            currentZone = ZoneType.LightContainment;
+
+            Zombies?.Clear();
+
+            currentZombieRoom = _config.FirstZombieRoom;
+            currentZombieRelativePosition = _config.FirstZombieRelativePosition;
+            currentZombieDamage = 20f;
 
             DecontaminationController.Singleton.DecontaminationOverride = DecontaminationController.DecontaminationStatus.Disabled;
 
@@ -130,6 +138,7 @@ namespace AutoEvents.Events.ZombieEscape
                 Zombies.Add(Player.List.Where(x => x.Role == _config.Role).GetRandomValue());
                 Zombies[i].Role.Set(_config.ZombieRole);
                 Zombies[i].IsGodModeEnabled = true;
+                Zombies[i].ClearBroadcasts();
                 Zombies[i].Broadcast(200, $"<b>You have been chosen as one of the starting Zombies!\n<color=red>Kill everyone.</color>\nYou have Godmode for the first {_config.ZombieGodmodeTime} seconds!</b>");
                 Zombies[i].Position = Room.Get(_config.FirstZombieRoom).WorldPosition(_config.FirstZombieRelativePosition);
             }
@@ -181,30 +190,6 @@ namespace AutoEvents.Events.ZombieEscape
                 }
             }
 
-            switch (currentZone)
-            {
-                case ZoneType.HeavyContainment:
-                    currentZombieHealth = _config.SecondZombieHealth;
-                    currentZombieSpeed = _config.SecondZombieSpeed;
-                    currentZombieDamage = _config.SecondZombieDamage;
-                    break;
-                case ZoneType.Entrance:
-                    currentZombieHealth = _config.ThirdZombieHealth;
-                    currentZombieSpeed = _config.ThirdZombieSpeed;
-                    currentZombieDamage = _config.ThirdZombieDamage; 
-                    break;
-                case ZoneType.Other:
-                    currentZombieHealth = _config.FourthZombieHealth;
-                    currentZombieSpeed = _config.FourthZombieSpeed;
-                    currentZombieDamage = _config.FourthZombieDamage;
-                    break;
-                default:
-                    currentZombieRoom = _config.FirstZombieRoom;
-                    currentZombieRelativePosition = _config.FirstZombieRelativePosition;
-                    currentZombieDamage = 20f;
-                    break;
-            }
-
             if (EventTime.TotalSeconds == _config.ZombieGodmodeTime)
             {
                 foreach (Player player in Zombies)
@@ -248,6 +233,12 @@ namespace AutoEvents.Events.ZombieEscape
                 {
                     lift.ChangeLock(DoorLockReason.AdminCommand);
                 }
+
+                currentZombieHealth = _config.SecondZombieHealth;
+                currentZombieSpeed = _config.SecondZombieSpeed;
+                currentZombieDamage = _config.SecondZombieDamage;
+                currentZombieRelativePosition = _config.SecondZombieRelativePosition;
+                currentZombieRoom = _config.SecondZombieRoom;
 
                 currentZone &= ~ZoneType.LightContainment; // remove light as valid zone
 
@@ -303,6 +294,12 @@ namespace AutoEvents.Events.ZombieEscape
                 Door.Get(DoorType.CheckpointEzHczB).IsOpen = false;
                 Door.Get(DoorType.CheckpointEzHczB).ChangeLock(DoorLockType.AdminCommand);
 
+                currentZombieHealth = _config.ThirdZombieHealth;
+                currentZombieSpeed = _config.ThirdZombieSpeed;
+                currentZombieDamage = _config.ThirdZombieDamage;
+                currentZombieRelativePosition = _config.ThirdZombieRelativePosition;
+                currentZombieRoom = _config.ThirdZombieRoom;
+
                 currentZone &= ~ZoneType.HeavyContainment;
 
                 Map.ClearBroadcasts();
@@ -337,7 +334,7 @@ namespace AutoEvents.Events.ZombieEscape
                 Door.Get(DoorType.GateA).IsOpen = true;
                 Door.Get(DoorType.GateB).IsOpen = true;
 
-                currentZone |= ZoneType.Other;
+                currentZone |= ZoneType.Surface;
             }
 
             if (EventTime.TotalSeconds == 615f)
@@ -353,6 +350,12 @@ namespace AutoEvents.Events.ZombieEscape
 
                 Door.Get(DoorType.GateB).IsOpen = false;
                 Door.Get(DoorType.GateB).ChangeLock(DoorLockType.AdminCommand);
+
+                currentZombieHealth = _config.FourthZombieHealth;
+                currentZombieSpeed = _config.FourthZombieSpeed;
+                currentZombieDamage = _config.FourthZombieDamage;
+                currentZombieRelativePosition = _config.FourthZombieRelativePosition;
+                currentZombieRoom = _config.FourthZombieRoom;
 
                 currentZone &= ~ZoneType.Entrance;
 

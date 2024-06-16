@@ -30,7 +30,7 @@ namespace AutoEvents.Events.ZombieEscape
         public float SecondZombieDamage { get; set; } = 30f;
 
         public RoomType ThirdZombieRoom { get; set; } = RoomType.EzVent;
-        public Vector3 ThirdZombieRelativePosition { get; set; } = new Vector3(-0.03f, -0.96f, -4.23f);
+        public Vector3 ThirdZombieRelativePosition { get; set; } = new Vector3(-0.03f, 1.57f, -4.23f);
         public float ThirdZombieHealth { get; set; } = 1000f;
         public float ThirdZombieSpeed { get; set; } = 10f;
         public float ThirdZombieDamage { get; set; } = 40f;

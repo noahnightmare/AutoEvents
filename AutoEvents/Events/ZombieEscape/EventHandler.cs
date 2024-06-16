@@ -41,6 +41,8 @@ namespace AutoEvents.Events.ZombieEscape
         }
         public void OnPlayerSpawningRagdoll(SpawningRagdollEventArgs ev)
         {
+            if (ev.Player == null) return;
+
             if (ev.Role == _config.ZombieRole)
             {
                 ev.IsAllowed = false;
