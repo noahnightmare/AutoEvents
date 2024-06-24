@@ -124,8 +124,8 @@ namespace AutoEvents.Controllers
                 Misc.AllowedColors.TryGetValue(keyRoleColour, out string rankColour);
                 return rankColour;
             }
-            Map.ShowHint("A rank colour was not parsed properly when starting an event!\nIf this happens, screenshot this and send it to Noah\nUser: " + player.Nickname + "\nColour: " + player.RankColor + "\nPlayer verified: " + player.IsVerified, 10);
-            return "";
+    
+            return "#002DB3"; // return a base colour (police blue) when not found
         }
 
         public string GetRankName(Player player)
