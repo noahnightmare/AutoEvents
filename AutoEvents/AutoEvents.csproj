@@ -71,6 +71,9 @@
     <Compile Include="Controllers\EventVoteController.cs" />
     <Compile Include="Controllers\WinnerController.cs" />
     <Compile Include="EventHandlers.cs" />
+    <Compile Include="Events\RandomLootRound\RandomLootRound.cs" />
+    <Compile Include="Events\RandomLootRound\Config.cs" />
+    <Compile Include="Events\RandomLootRound\EventHandler.cs" />
     <Compile Include="Events\ZombieEscape\Config.cs" />
     <Compile Include="Events\ZombieEscape\EventHandler.cs" />
     <Compile Include="Events\ZombieEscape\ZombieEscape.cs" />
