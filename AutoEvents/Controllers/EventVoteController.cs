@@ -1,4 +1,5 @@
 ﻿using AutoEvents.Commands;
+using AutoEvents.Events.RandomLootRound;
 using AutoEvents.Models;
 using Exiled.API.Features;
 using MEC;
@@ -133,8 +134,22 @@ namespace AutoEvents.Controllers
 
             if (outcome != null)
             {
-                // initialise an event
-                new EventController(outcome, Server.Host);
+                if (!outcome.ForceQueueable)
+                {
+                    // initialise an event
+                    new EventController(outcome, Server.Host);
+                }
+                else // if it needs a restart
+                {
+                    AutoEvents.Instance.CooldownController.QueueEvent(outcome, Server.Host);
+                    Map.Broadcast(10, $"<b>{outcome.Name} has been chosen!</b>\nThe server will need to restart to run this event.\nRestarting in 5 seconds...");
+                    Timing.CallDelayed(5f, () => Round.Restart(false));
+
+                    if (outcome.Name == "RandomLootRound")
+                    {
+                        RandomLootRound.Patch();
+                    }
+                }
             }
             else
             {

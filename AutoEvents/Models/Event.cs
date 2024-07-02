@@ -116,6 +116,9 @@ namespace AutoEvents.Models
         // Force specific friendly fire settings
         protected virtual bool EnableFriendlyFire { get; set; } = false;
 
+        // Should the event ONLY be queueable or not? Helps for events like RandomLootRound that only work after round restarts
+        public virtual bool ForceQueueable { get; set; } = false;
+
         // -----------------------------------------------------------------------------
 
         protected virtual float coroutineDelay { get; set; } = 1f;

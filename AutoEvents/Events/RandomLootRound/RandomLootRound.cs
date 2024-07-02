@@ -23,6 +23,11 @@ using Exiled.Events.EventArgs.Player;
 using Exiled.API.Features.Pickups;
 using Exiled.API.Features.Items;
 using Exiled.Events.EventArgs.Map;
+using MapGeneration.Distributors;
+using AutoEvents.Patches;
+using HarmonyLib;
+using System.Reflection;
+using Exiled.Events.EventArgs.Server;
 
 namespace AutoEvents.Events.RandomLootRound
 {
@@ -33,12 +38,10 @@ namespace AutoEvents.Events.RandomLootRound
         public override string Name { get; set; } = "RandomLootRound";
         public override EventType eventType { get; set; } = EventType.NormalRound;
         public override string CommandName { get; set; } = "rl";
-
+        public override bool ForceQueueable { get; set; } = true;
         private Player _winner { get; set; }
         private Side _winnerSide { get; set; }
         private Player _lastAlive { get; set; }
-
-        private HashSet<ushort> _randomisedPickups = new HashSet<ushort>();
 
         // event handlers, unique per plugin
         // register game logic within EventHandler per event
@@ -65,24 +68,19 @@ namespace AutoEvents.Events.RandomLootRound
         protected override void RegisterEvents()
         {
             _handler = new EventHandler(_config);
-            Handlers.Map.PickupAdded += OnPickupSpawned;
             Handlers.Player.Spawned += OnPlayerSpawned;
-            Handlers.Player.PickingUpItem += OnPickingUpItem;
         }
 
         // events unregistered when the event finishes
         protected override void UnregisterEvents()
         {
-            Handlers.Map.PickupAdded -= OnPickupSpawned;
             Handlers.Player.Spawned -= OnPlayerSpawned;
-            Handlers.Player.PickingUpItem -= OnPickingUpItem;
             _handler = null;
         }
 
         // define what happens at the start of the event
         protected override void OnStart()
         {
-            _randomisedPickups?.Clear();
             Map.Broadcast(600, "<b>Random Loot Round\n<color=red>Your inventory, and items around the map, are randomized.</color></b>");
 
             Timing.CallDelayed(0.1f, () => 
@@ -95,7 +93,6 @@ namespace AutoEvents.Events.RandomLootRound
                         for (int i = 0; i < spawnItemCount[player.Role.Type]; i++)
                         {
                             Item item = player.AddItem(EnumUtils<ItemType>.Values.GetRandomValue(i => i != ItemType.None && !i.IsAmmo()));
-                            _randomisedPickups.Add(item.Serial);
                         }
                     }
                 }
@@ -124,7 +121,7 @@ namespace AutoEvents.Events.RandomLootRound
         // This executes only if the event finishes. If the event is stopped. OnStop will be called instead.
         protected override void OnEnd()
         {
-
+            Unpatch();
         }
 
         // Can be used to broadcast that the event is stopping. Can also be used to stop extra coroutines.
@@ -148,18 +145,6 @@ namespace AutoEvents.Events.RandomLootRound
            
         }
 
-        // handles dropped items
-        public void OnPickupSpawned(PickupAddedEventArgs ev)
-        {
-            if (!_randomisedPickups.Contains(ev.Pickup.Serial) && !ev.Pickup.Type.IsAmmo())
-            {
-                Vector3 pickupPos = ev.Pickup.Position;
-                ev.Pickup.Destroy();
-                Pickup p = Pickup.CreateAndSpawn(EnumUtils<ItemType>.Values.GetRandomValue(i => i != ItemType.None && !i.IsAmmo()), pickupPos, default);
-                _randomisedPickups.Add(p.Serial);
-            }
-        }
-
         public void OnPlayerSpawned(SpawnedEventArgs ev)
         {
             if (spawnItemCount.ContainsKey(ev.Player.Role.Type))
@@ -168,20 +153,82 @@ namespace AutoEvents.Events.RandomLootRound
                 for (int i = 0; i < spawnItemCount[ev.Player.Role.Type]; i++)
                 {
                     Item item = ev.Player.AddItem(EnumUtils<ItemType>.Values.GetRandomValue(i => i != ItemType.None && !i.IsAmmo()));
-                    _randomisedPickups.Add(item.Serial);
                 }
             }
         }
 
-        public void OnPickingUpItem(PickingUpItemEventArgs ev)
+        public static void Patch()
         {
-            if (_randomisedPickups.Contains(ev.Pickup.Serial))
+            Log.Warn("Patching.");
+            try
             {
-                ev.Player.ShowHint("This item has already been randomized!");
+                AutoEvents._harmony.Patch(
+                    AccessTools.Method(typeof(Locker), nameof(Locker.FillChamber)),
+                    prefix: new(AccessTools.Method(typeof(LockerFillChamberPatch), nameof(LockerFillChamberPatch.Prefix)))
+                );
+
+                AutoEvents._harmony.Patch(
+                    AccessTools.Method(typeof(ItemDistributor), nameof(ItemDistributor.PlaceItem)),
+                    prefix: new(AccessTools.Method(typeof(PlaceItemPatch), nameof(PlaceItemPatch.Prefix)))
+                );
+
+                AutoEvents._harmony.Patch(
+                    AccessTools.Method(typeof(ItemDistributor), nameof(ItemDistributor.PlaceSpawnables)),
+                    prefix: new(AccessTools.Method(typeof(PlaceSpawnablesPatch), nameof(PlaceSpawnablesPatch.Prefix)))
+                );
+
+                Type[] parameterTypes = { typeof(ItemType) }; // stops ambiguous method call error
+
+                AutoEvents._harmony.Patch(
+                    AccessTools.Method(typeof(ItemSpawnpoint), nameof(ItemSpawnpoint.CanSpawn), parameterTypes),
+                    prefix: new(AccessTools.Method(typeof(CanSpawnPatch), nameof(CanSpawnPatch.Prefix)))
+                );
             }
-            else
+            catch (Exception e)
             {
-                ev.Player.ShowHint("Drop this item to randomize it!");
+                Log.Error($"Error applying patches: {e}");
+            }
+
+            foreach(MethodBase method in AutoEvents._harmony.GetPatchedMethods())
+            {
+                Log.Info(method);
+            }
+        }
+
+        public static void Unpatch()
+        {
+            Log.Warn("Unpatching.");
+            try
+            {
+                AutoEvents._harmony.Unpatch(
+                    AccessTools.Method(typeof(Locker), nameof(Locker.FillChamber)),
+                    HarmonyPatchType.Prefix,
+                    AutoEvents.HarmonyId
+                );
+
+                AutoEvents._harmony.Unpatch(
+                    AccessTools.Method(typeof(ItemDistributor), nameof(ItemDistributor.PlaceItem)),
+                    HarmonyPatchType.Prefix,
+                    AutoEvents.HarmonyId
+                );
+
+                AutoEvents._harmony.Unpatch(
+                    AccessTools.Method(typeof(ItemDistributor), nameof(ItemDistributor.PlaceSpawnables)),
+                    HarmonyPatchType.Prefix,
+                    AutoEvents.HarmonyId
+                );
+
+                Type[] parameterTypes = { typeof(ItemType) }; // stops ambiguous method call error
+
+                AutoEvents._harmony.Unpatch(
+                    AccessTools.Method(typeof(ItemSpawnpoint), nameof(ItemSpawnpoint.CanSpawn), parameterTypes),
+                    HarmonyPatchType.Prefix,
+                    AutoEvents.HarmonyId
+                );
+            }
+            catch (Exception e)
+            {
+                Log.Error($"Error removing patches: {e}");
             }
         }
     }
