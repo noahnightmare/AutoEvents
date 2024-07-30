@@ -2,7 +2,7 @@
 
 Private plugin for Noah's Nation SCP:SL server to accomodate the loading and auto-running of a variety of different fun gamemodes.  
   
-``events <name>`` - runs the event specified  
+``event <name>`` - runs the event specified  
 ``eventskip`` - stops events from being ran this round  
 ``relativepos`` - helper command: returns the relative position of the player and the room they are in.  
 ``.role`` - allows the event winner to choose their role next round  
@@ -36,6 +36,9 @@ Private plugin for Noah's Nation SCP:SL server to accomodate the loading and aut
 
 **ProtectThePresident**  
 *One person spawns as the president (a scientist) and a set amount of MTF will protect him (based on player count). The rest of the players spawn as Chaos. The MTF must escort him to the escape to win. If the President dies, Chaos win!*
+
+**RandomLootRound**  
+*Inventories and map loot is completely randomised!*
 
 **SmallRound**  
 *Normal round, but everyone is tiny!*
