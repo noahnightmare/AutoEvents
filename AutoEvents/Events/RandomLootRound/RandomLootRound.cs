@@ -49,6 +49,7 @@ namespace AutoEvents.Events.RandomLootRound
 
         public readonly Config _config = new Config();
 
+        // defines the amount of items that the role spawns with
         private Dictionary<RoleTypeId, int> spawnItemCount = new Dictionary<RoleTypeId, int>()
         {
             { RoleTypeId.ClassD, 2 },
@@ -62,6 +63,21 @@ namespace AutoEvents.Events.RandomLootRound
             { RoleTypeId.ChaosMarauder, 6 },
             { RoleTypeId.ChaosConscript, 5 },
             { RoleTypeId.ChaosRifleman, 5 },
+        };
+
+        // what keycard each role spawns with (if not in dictionary = no card)
+        private Dictionary<RoleTypeId, ItemType> roleSpawnKeycards = new Dictionary<RoleTypeId, ItemType>() 
+        {
+            { RoleTypeId.Scientist, ItemType.KeycardScientist },
+            { RoleTypeId.NtfCaptain, ItemType.KeycardMTFCaptain },
+            { RoleTypeId.NtfSergeant, ItemType.KeycardMTFOperative },
+            { RoleTypeId.NtfSpecialist, ItemType.KeycardMTFOperative },
+            { RoleTypeId.NtfPrivate, ItemType.KeycardMTFOperative },
+            { RoleTypeId.FacilityGuard, ItemType.KeycardGuard },
+            { RoleTypeId.ChaosRepressor, ItemType.KeycardChaosInsurgency },
+            { RoleTypeId.ChaosMarauder, ItemType.KeycardChaosInsurgency },
+            { RoleTypeId.ChaosConscript, ItemType.KeycardChaosInsurgency },
+            { RoleTypeId.ChaosRifleman, ItemType.KeycardChaosInsurgency },
         };
 
         // events only need registering when the event is being ran
@@ -87,12 +103,20 @@ namespace AutoEvents.Events.RandomLootRound
             {
                 foreach (Player player in Player.List)
                 {
-                    if (spawnItemCount.ContainsKey(player.Role.Type))
+                    if (spawnItemCount.TryGetValue(player.Role.Type, out int numItemsToAssign))
                     {
-                        player.ClearInventory();
-                        for (int i = 0; i < spawnItemCount[player.Role.Type]; i++)
+                        player.ClearItems();
+
+                        // assign random items
+                        for (int i = 0; i < numItemsToAssign; i++)
                         {
                             Item item = player.AddItem(EnumUtils<ItemType>.Values.GetRandomValue(i => i != ItemType.None && !i.IsAmmo()));
+                        }
+
+                        // assign normal keycards after clear
+                        if (roleSpawnKeycards.TryGetValue(player.Role.Type, out ItemType keycardToAssign))
+                        {
+                            player.AddItem(keycardToAssign);
                         }
                     }
                 }
@@ -147,12 +171,19 @@ namespace AutoEvents.Events.RandomLootRound
 
         public void OnPlayerSpawned(SpawnedEventArgs ev)
         {
-            if (spawnItemCount.ContainsKey(ev.Player.Role.Type))
+            if (spawnItemCount.TryGetValue(ev.Player.Role.Type, out int numItemsToAssign))
             {
                 ev.Player.ClearInventory();
-                for (int i = 0; i < spawnItemCount[ev.Player.Role.Type]; i++)
+
+                for (int i = 0; i < numItemsToAssign; i++)
                 {
                     Item item = ev.Player.AddItem(EnumUtils<ItemType>.Values.GetRandomValue(i => i != ItemType.None && !i.IsAmmo()));
+                }
+
+                // assign normal keycards after clear
+                if (roleSpawnKeycards.TryGetValue(ev.Player.Role.Type, out ItemType keycardToAssign))
+                {
+                    ev.Player.AddItem(keycardToAssign);
                 }
             }
         }

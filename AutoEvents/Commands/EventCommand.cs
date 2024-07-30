@@ -135,6 +135,12 @@ namespace AutoEvents.Commands
                     AutoEvents.Instance.CooldownController._cooldown.GlobalCooldown = AutoEvents.Instance.Config.GlobalCooldown;
                     AutoEvents.Instance.CooldownController.QueueEvent(Event.GetEvent(arguments.At(0)), Player.Get(sender));
                     response = "Event will start in the next round.";
+
+                    if (Event.GetEvent(arguments.At(0)).Name == "RandomLootRound")
+                    {
+                        RandomLootRound.Patch();
+                    }
+
                     return true;
                 }
                 else
