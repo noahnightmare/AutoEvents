@@ -15,8 +15,8 @@ namespace AutoEvents.Events.PeanutSurvival
     {
         public RoleTypeId peanutRole = RoleTypeId.Scp173;
         public RoomType Room { get; set; } = RoomType.Hcz079;
-        public Vector3 PeanutRelativePosition { get; set; } = new Vector3(11.55f, -2.37f, 1.02f);
-        public Vector3 PlayerRelativePosition { get; set; } = new Vector3(-3.67f, -4.28f, -6.71f);
+        public Vector3 PeanutRelativePosition { get; set; } = new Vector3(11.93f, -2.37f, -0.03f);
+        public Vector3 PlayerRelativePosition { get; set; } = new Vector3(6.61f, -2.37f, -0.06f);
 
         public override List<RoleTypeId> rolesThatCantPickup { get; set; } = new List<RoleTypeId>()
         {

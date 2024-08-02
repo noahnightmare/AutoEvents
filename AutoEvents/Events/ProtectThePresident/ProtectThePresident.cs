@@ -44,6 +44,8 @@ namespace AutoEvents.Events.ProtectThePresident
 
         public readonly Config _config = new Config();
 
+        private Player president;
+
         // events only need registering when the event is being ran
         protected override void RegisterEvents()
         {
@@ -74,6 +76,7 @@ namespace AutoEvents.Events.ProtectThePresident
         protected override void OnStart()
         {
             _winner = null;
+            president = null;
             _winnerSide = Side.None;
             presidentCanPickup = false;
 
@@ -89,7 +92,7 @@ namespace AutoEvents.Events.ProtectThePresident
                 player.Position = Room.Get(_config.MainRoom).WorldPosition(_config.MainRelativePosition);
             }
 
-            Player president = Player.List.Where(x => x.Role == _config.MainRole).GetRandomValue();
+            president = Player.List.Where(x => x.Role == _config.MainRole).GetRandomValue();
             president.Role.Set(_config.PresidentRole);
 
             int guardAmount = 0;
@@ -177,6 +180,36 @@ namespace AutoEvents.Events.ProtectThePresident
             {
                 presidentCanPickup = true;
                 Player.Get(x => x.Role == _config.PresidentRole).FirstOrDefault().ShowHint("<b><color=red>All of your guards have died!</color>\nYou can now pick up items.\nDefend yourself!</b>");
+            }
+
+            if (EventTime.TotalSeconds % 60 == 0)
+            {
+                string zoneName;
+
+                switch (president.Zone)
+                {
+                    case ZoneType.Surface:
+                        zoneName = "Surface";
+                        break;
+                    case ZoneType.Entrance:
+                        zoneName = "Entrance";
+                        break;
+                    case ZoneType.HeavyContainment:
+                        zoneName = "Heavy Containment";
+                        break;
+                    case ZoneType.LightContainment:
+                        zoneName = "Light Containment";
+                        break;
+                    default:
+                        zoneName = string.Empty;
+                        break;
+                }
+
+                if (zoneName !=  string.Empty)
+                {
+                    Cassie.MessageTranslated($"The Scientist is located in {zoneName} zone . All Chaos Insurgents please report here immediately",
+                      $"The President (Scientist) is located in {zoneName} Zone. All Chaos Insurgents please report here immediately.");
+                }
             }
         }
 

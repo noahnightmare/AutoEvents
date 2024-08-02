@@ -84,23 +84,23 @@ namespace AutoEvents.Events.PeanutSurvival
             randomPlayer.Role.Set(_config.peanutRole);
             randomPlayer.Position = Room.Get(_config.Room).WorldPosition(_config.PeanutRelativePosition);
 
-            foreach(Door door in Door.List)
+            foreach (Door door in Door.List.Where(d => d.IsCheckpoint || d.IsPartOfCheckpoint || d.Type == DoorType.HczArmory))
             {
                 door.IsOpen = false;
                 door.ChangeLock(DoorLockType.AdminCommand);
             }
-
-            Door.Get(DoorType.Scp079Armory).IsOpen = true;
 
             foreach (Lift lift in Lift.List)
             {
                 lift.ChangeLock(DoorLockReason.AdminCommand);
             }
 
-            Cassie.MessageTranslated("jam_010_2 SCP 1 7 3 pitch_0.9 has breached containment . pitch_0.9 All ClassD Personnel must jam_020_2 pitch_0.7 run pitch_0.8 immediately . ",
-                "<color=red>SCP-173 has breached containment.</color> All ClassD Personnel must run immediately.");
-
-            Timing.CallDelayed(10f, () => { Door.Get(DoorType.Scp079Second).IsOpen = true; });
+            Timing.CallDelayed(10f, () => 
+            { 
+                Door.Get(DoorType.Scp079First).IsOpen = true;
+                Cassie.MessageTranslated("jam_010_2 SCP 1 7 3 pitch_0.9 has breached containment . pitch_0.9 All ClassD Personnel must jam_020_2 pitch_0.7 run pitch_0.8 immediately . ",
+                  "<color=red>SCP-173 has breached containment.</color> All ClassD Personnel must run immediately.");
+            });
         }
 
         // Use this method to return a bool to determine if the event should finish

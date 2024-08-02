@@ -78,6 +78,9 @@
     <Compile Include="Events\RandomLootRound\RandomLootRound.cs" />
     <Compile Include="Events\RandomLootRound\Config.cs" />
     <Compile Include="Events\RandomLootRound\EventHandler.cs" />
+    <Compile Include="Events\CandyMania\Config.cs" />
+    <Compile Include="Events\CandyMania\EventHandler.cs" />
+    <Compile Include="Events\CandyMania\CandyMania.cs" />
     <Compile Include="Events\ZombieEscape\Config.cs" />
     <Compile Include="Events\ZombieEscape\EventHandler.cs" />
     <Compile Include="Events\ZombieEscape\ZombieEscape.cs" />
