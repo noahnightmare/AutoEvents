@@ -13,7 +13,7 @@ Private plugin for Noah's Nation SCP:SL server to accomodate the loading and aut
 **BallSurvival**  
 *Everyone spawns in old 173’s room and SCP-018’s will randomly spawn around the room. The last person to survive wins!*
 
-**CandyMania**
+**CandyMania**  
 *Normal round, but everyone drops 3 random candies on death. Pink candy has a 5% chance of spawning!*
 
 **DogHideAndSeek**  
