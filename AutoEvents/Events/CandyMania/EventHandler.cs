@@ -3,7 +3,11 @@ using Exiled.API.Features;
 using Exiled.API.Features.Items;
 using Exiled.API.Features.Pickups;
 using Exiled.Events.EventArgs.Player;
+using Exiled.Events.EventArgs.Server;
 using HarmonyLib;
+using InventorySystem.Items.Usables.Scp330;
+using MEC;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,6 +19,7 @@ namespace AutoEvents.Events.CandyMania
     public class EventHandler
     {
         private readonly Config _config;
+        private CoroutineHandle _candyCoroutine;
 
         public EventHandler(Config config)
         {
@@ -29,7 +34,7 @@ namespace AutoEvents.Events.CandyMania
             {
                 Scp330 candy = (Scp330)Item.Create(ItemType.SCP330);
                 
-                if (Random.Range(1, 100) <= _config.PinkCandyChance)
+                if (UnityEngine.Random.Range(1, 100) <= _config.PinkCandyChance)
                 {
                     candy.RemoveAllCandy();
                     candy.AddCandy(InventorySystem.Items.Usables.Scp330.CandyKindID.Pink);

@@ -20,6 +20,8 @@ using Exiled.API.Extensions;
 using InventorySystem.Items.Pickups;
 using Interactables.Interobjects.DoorUtils;
 using Exiled.API.Features.Items;
+using Exiled.Events.EventArgs.Player;
+using InventorySystem.Items.Usables.Scp330;
 
 namespace AutoEvents.Events.CandyMania
 {
@@ -64,7 +66,15 @@ namespace AutoEvents.Events.CandyMania
             _winner = null;
             _winnerSide = Side.None;
 
-            Map.Broadcast(600, "<b>Candy Mania\n<color=red>When you die, you drop some random candy!</color></b>");
+            _coroutine = Timing.RunCoroutine(CandyGiver(), "Candy Giver");
+
+            Map.Broadcast(600, "<b>Candy Mania\n<color=red>You spawn with 2 candies. Dying drops even more candy.\nEvery 60 seconds, you get another candy.</color></b>");
+
+            foreach (Player player in Player.List.Where(p => CanAddCandy(p)))
+            {
+                Timing.CallDelayed(0.5f, () => { player.TryAddCandy(GetRandomCandyID()); });
+                Timing.CallDelayed(1f, () => { player.TryAddCandy(GetRandomCandyID()); });
+            }
         }
 
         // Use this method to return a bool to determine if the event should finish
@@ -89,13 +99,14 @@ namespace AutoEvents.Events.CandyMania
         // This executes only if the event finishes. If the event is stopped. OnStop will be called instead.
         protected override void OnEnd()
         {
-
+            Timing.KillCoroutines(new CoroutineHandle[] { _coroutine });
         }
 
         // Can be used to broadcast that the event is stopping. Can also be used to stop extra coroutines.
         // NOT NEEDED it's optional
         protected override void OnStop()
         {
+            Timing.KillCoroutines(new CoroutineHandle[] { _coroutine });
             base.OnStop();
         }
 
@@ -111,6 +122,44 @@ namespace AutoEvents.Events.CandyMania
         protected override void OnCleanup()
         {
            
+        }
+
+        private IEnumerator<float> CandyGiver()
+        {
+            // give a new candy to everyone every 60 sec
+            for (; ; )
+            {
+                yield return Timing.WaitForSeconds(_config.CandyTimer);
+                foreach (Player player in Player.List.Where(p => CanAddCandy(p)))
+                {
+                    player.TryAddCandy(GetRandomCandyID());
+                    player.ShowHint("You received a candy!", 5);
+                }
+            }
+        }
+
+        private bool CanAddCandy(Player player)
+        {
+            return player.IsAlive && !player.IsScp && !player.IsInventoryFull;
+        }
+
+        private CandyKindID GetRandomCandyID()
+        {
+            Array values = Enum.GetValues(typeof(CandyKindID));
+
+            CandyKindID candy = (CandyKindID)values.GetValue(UnityEngine.Random.Range(0, values.Length));
+
+            while (candy == CandyKindID.None || candy == CandyKindID.Pink)
+            {
+                candy = (CandyKindID)values.GetValue(UnityEngine.Random.Range(0, values.Length));
+            }
+
+            if (UnityEngine.Random.Range(1, 100) <= _config.PinkCandyChance)
+            {
+                candy = CandyKindID.Pink;
+            }
+
+            return candy;
         }
     }
 }

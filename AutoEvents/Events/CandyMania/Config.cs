@@ -18,5 +18,6 @@ namespace AutoEvents.Events.CandyMania
         public override List<RoleTypeId> rolesThatCantPickup { get; set; } = new List<RoleTypeId>();
         public int CandyDrops { get; set; } = 3;
         public float PinkCandyChance { get; set; } = 5f;
+        public float CandyTimer { get; set; } = 60f;
     }
 }
