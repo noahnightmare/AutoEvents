@@ -10,8 +10,11 @@ Private plugin for Noah's Nation SCP:SL server to accomodate the loading and aut
 
 ## Current Events
 
-**Ball Survival**  
+**BallSurvival**  
 *Everyone spawns in old 173’s room and SCP-018’s will randomly spawn around the room. The last person to survive wins!*
+
+**CandyMania**  
+*Normal round, but everyone drops 3 random candies on death. Pink candy has a 5% chance of spawning!*
 
 **DogHideAndSeek**  
 *Everyone spawns as Class-D in a light containment. One random player is chosen to be the starting seeker (the 939). Class-D that die will turn into 939 and join the seeker team. The last player alive wins!*
