@@ -39,6 +39,7 @@ namespace AutoEvents.Events.ZombieEscape
                 ev.Player.AddAmmo(ev.Firearm.AmmoType, 1);
             }
         }
+
         public void OnPlayerSpawningRagdoll(SpawningRagdollEventArgs ev)
         {
             if (ev.Player == null) return;

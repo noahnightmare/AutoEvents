@@ -135,8 +135,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="EXILED">
-      <Version>8.9.5</Version>
+    <PackageReference Include="ExMod.Exiled">
+      <Version>8.12.2</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

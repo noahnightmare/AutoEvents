@@ -154,6 +154,8 @@ namespace AutoEvents.Controllers
             else
             {
                 Map.Broadcast(10, "<b>Event was cancelled!</b>\nA normal round will play out.");
+                // reset the auto event cooldown
+                AutoEvents.Instance.CooldownController._cooldown.RemainingRoundsForAutoEvent = AutoEvents.Instance.Config.AutoEventAfterRounds;
             }
 
             yield break;
